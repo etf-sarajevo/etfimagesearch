@@ -9,7 +9,6 @@ QT       += core gui
 TARGET = ETFImageSearch
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         mainwindow.cpp \
     indexer.cpp \
@@ -22,3 +21,9 @@ HEADERS  += mainwindow.h \
     rgbhistogram.h
 
 FORMS    += mainwindow.ui
+
+win* {
+    LIBS += ..\\libjpeg-hacked\\libjpeg.a
+} else {
+    LIBS += ../libjpeg-hacked/libjpeg.a
+}
