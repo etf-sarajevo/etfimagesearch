@@ -35,6 +35,7 @@ FeatureVector RGBHistogram::extractFeatures(const uchar *imageData, int size)
 	int powerR = (8 - divisorG) + (8 - divisorB);
 	int powerG = 8 - divisorB;
 
+	// Calculate histogram
 	for (int i(0); i<size; i+=3) {
 		uint index = (imageData[i] >> divisorR) << powerR;
 		index += (imageData[i+1] >> divisorG) << powerG;

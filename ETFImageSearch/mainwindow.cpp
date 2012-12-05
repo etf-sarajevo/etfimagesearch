@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QFileDialog>
+#include <QTextBrowser>
 
 #include "rgbhistogram.h"
 
@@ -36,13 +37,19 @@ void MainWindow::on_lineEdit_textChanged(const QString &path)
 	if (fsm==0) return;
 
 	qDebug() << path;
-	fsm->setRootPath(path);
-	ui->treeView->setRootIndex(fsm->index(path));
-	idx->setPath(path);
-	if (idx->indexed())
-		ui->searchButton->setEnabled(true);
-	else
-		ui->searchButton->setEnabled(false);
+	QFileInfo file(path);
+	if (file.exists() && file.isDir()) {
+		ui->lineEdit->setStyleSheet("");
+		fsm->setRootPath(path);
+		ui->treeView->setRootIndex(fsm->index(path));
+		idx->setPath(path);
+		if (idx->indexed())
+			ui->searchButton->setEnabled(true);
+		else
+			ui->searchButton->setEnabled(false);
+	} else {
+		ui->lineEdit->setStyleSheet("QLineEdit { color: red }");
+	}
 }
 
 void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
@@ -73,8 +80,14 @@ void MainWindow::on_searchButton_clicked()
 	if (!fileName.isEmpty()) {
 		QVector<Indexer::Result> results = idx->search(fileName);
 		qDebug() << "TOP 10 RESULTS:";
-		for (int i(0); i<results.size(); i++)
+		QString result("TOP 10 RESULTS:\n");
+		for (int i(0); i<results.size(); i++) {
 			qDebug() << results[i].fileName << results[i].distance;
+			if (i<10) result += QString("%1 %2\n").arg(results[i].fileName).arg(results[i].distance);
+		}
+		QTextBrowser* br = new QTextBrowser(0);
+		br->setPlainText(result);
+		br->show();
 	}
 }
 

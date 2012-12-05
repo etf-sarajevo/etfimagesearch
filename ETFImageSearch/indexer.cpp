@@ -34,14 +34,6 @@ void Indexer::loadIndex()
 		file.open(QIODevice::ReadOnly);
 		QDataStream in(&file);
 		while (!in.atEnd()) {
-/*			QString key;
-			char* data;
-			uint datalen;
-			in >> key;
-			in.readBytes(data, datalen);
-			FeatureVector vec;
-			vec.features.append(data, datalen);
-			delete[] data;*/
 			QString key;
 			FeatureVector vec;
 			in >> key >> vec.features;
