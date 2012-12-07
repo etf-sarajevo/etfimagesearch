@@ -9,14 +9,14 @@
 class PRTest
 {
 public:
-	PRTest(QString path, SearchAlgorithm* alg, Indexer* ind);
+	PRTest(QString path, SearchAlgorithm* alg, Indexer* idx);
 	
 	bool loadCategories();
 	
 private:
 	QString path;
 	SearchAlgorithm* alg;
-	Indexer* ind;
+	Indexer* idx;
 };
 
 #endif // PRTEST_H

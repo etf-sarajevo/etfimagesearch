@@ -15,14 +15,16 @@ SOURCES += main.cpp\
     searchalgorithm.cpp \
     rgbhistogram.cpp \
     liuetal_v2.cpp \
-    prtest.cpp
+    prtest.cpp \
+    qcustomplot.cpp
 
 HEADERS  += mainwindow.h \
     indexer.h \
     searchalgorithm.h \
     rgbhistogram.h \
     liuetal_v2.h \
-    prtest.h
+    prtest.h \
+    qcustomplot.h
 
 FORMS    += mainwindow.ui
 
