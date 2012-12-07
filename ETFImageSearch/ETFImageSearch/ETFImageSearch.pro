@@ -22,6 +22,8 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
+INCLUDEPATH += ../libjpeg-hacked
+
 win* {
     LIBS += ..\\libjpeg-hacked\\libjpeg.a
 } else {

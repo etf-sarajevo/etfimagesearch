@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QFileSystemModel>
+#include <QProgressDialog>
+#include <QTime>
 
 #include "indexer.h"
 
@@ -27,10 +29,17 @@ private slots:
 	
 	void on_searchButton_clicked();
 	
+	void startedIndexing(int count);
+	void indexingFile(QString fileName);
+	void finishedIndexing();
+	
 private:
 	Ui::MainWindow *ui;
 	QFileSystemModel *fsm;
 	Indexer* idx;
+	QProgressDialog* progressDialog;
+	QTime time;
+	SearchAlgorithm* currentAlgorithm;
 	
 };
 

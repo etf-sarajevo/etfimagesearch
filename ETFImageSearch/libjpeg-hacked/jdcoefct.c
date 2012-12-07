@@ -26,6 +26,9 @@
 
 
 void libjpeg_cbir_process_data_block(JCOEFPTR row, int currentComponent) {
+	(*libjpeg_cbir_process_block_callback)(row, currentComponent);
+	return;
+	
     int i;
 
     /* libjpeg is not zigzag!!! */

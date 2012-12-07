@@ -21,8 +21,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->treeView->setModel(fsm);
 	ui->treeView->setRootIndex(fsm->index(QDir::homePath()));
 	
-	idx = new Indexer(new RGBHistogram(256));
-	idx->setPath(QDir::homePath());
+	currentAlgorithm = new RGBHistogram(256);
+	
+	idx = new Indexer(currentAlgorithm, QDir::homePath());
 	if (idx->indexed())
 		ui->searchButton->setEnabled(true);
 }
@@ -69,8 +70,11 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
 
 void MainWindow::on_indexButton_clicked()
 {
+	connect(idx, SIGNAL(startedIndexing(int)), this, SLOT(startedIndexing(int)));
+	connect(idx, SIGNAL(indexingFile(QString)), this, SLOT(indexingFile(QString)));
+	connect(idx, SIGNAL(finishedIndexing()), this, SLOT(finishedIndexing()));
+	
 	idx->createIndex();
-	ui->searchButton->setEnabled(true);
 }
 
 void MainWindow::on_searchButton_clicked()
@@ -89,5 +93,28 @@ void MainWindow::on_searchButton_clicked()
 		br->setPlainText(result);
 		br->show();
 	}
+}
+
+void MainWindow::startedIndexing(int count)
+{
+	progressDialog = new QProgressDialog("Indexing files", QString(), 0, count);
+	progressDialog->setAutoReset(false);
+	progressDialog->show();
+	time = QTime::currentTime();
+}
+
+void MainWindow::indexingFile(QString fileName)
+{
+	progressDialog->setLabelText(QString("Indexing file %1").arg(fileName));
+	progressDialog->setValue(progressDialog->value()+1);
+}
+
+void MainWindow::finishedIndexing()
+{
+	ui->searchButton->setEnabled(true);
+	progressDialog->setValue(progressDialog->value()+1);
+	int passed = time.msecsTo(QTime::currentTime());
+	progressDialog->setLabelText(QString("Finished indexing. Total time: %1 s").arg(qreal(passed)/1000));
+	progressDialog->setCancelButtonText("&Close");
 }
 
