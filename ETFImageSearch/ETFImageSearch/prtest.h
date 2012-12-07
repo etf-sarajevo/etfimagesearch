@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "searchalgorithm.h"
+#include "indexer.h"
 
 class PRTest
 {

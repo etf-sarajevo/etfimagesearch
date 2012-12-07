@@ -107,7 +107,7 @@ void MainWindow::on_searchButton_clicked()
 
 void MainWindow::on_prtestButton_clicked()
 {
-	PRTest prtest(ui->lineEdit->text(), currentAlgorithm);
+	PRTest prtest(ui->lineEdit->text(), currentAlgorithm, idx);
 	if (!prtest.loadCategories()) {
 		QTextBrowser* br = new QTextBrowser(0);
 		br->setHtml("<h1>Precision-Recall test</h1><p>To run Precision-Recall test on your images, all images in this folder need to be classified into categories. Each image will be searched, and all results within the same category will be considered a &quot;hit&quot;, while other results will be &quot;miss&quot;. You need to create a file named categories.txt in the format:</p><tt>filename category</tt><p>Category is an arbitrary case-sensitive string that will be matched.</p>");
@@ -133,6 +133,7 @@ void MainWindow::indexingFile(QString fileName)
 void MainWindow::finishedIndexing()
 {
 	ui->searchButton->setEnabled(true);
+	ui->prtestButton->setEnabled(true);
 	progressDialog->setValue(progressDialog->value()+1);
 	int passed = time.msecsTo(QTime::currentTime());
 	progressDialog->setLabelText(QString("Finished indexing. Total time: %1 s").arg(qreal(passed)/1000));
