@@ -1107,7 +1107,8 @@ int specificBlocksLast1000[MAX_COMPONENTS][6];
 double specificBlocksSquares[MAX_COMPONENTS][6];
 int specificBlocksSquaresLast1000[MAX_COMPONENTS][6];
 //void (*libjpeg_cbir_process_block_callback)(JCOEFPTR block, int component);
-void (*libjpeg_cbir_process_block_callback)(short int* block, int component);
+void *libjpeg_cbir_process_block_callback_object;
+void (*libjpeg_cbir_process_block_callback)(void* object, short int* block, int component);
 
 EXTERN(void) libjpeg_cbir_final_stats JPP((double outVector1[3][4], double outVector2[3][12]));
 EXTERN(void) libjpeg_cbir_clear_stats ();

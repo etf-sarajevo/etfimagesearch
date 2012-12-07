@@ -91,7 +91,8 @@ FeatureVector Indexer::getFV(QString imagePath)
 		dctalg->init();
 
 		/* Set callback function. This will be called for each block! */
-//		libjpeg_cbir_process_block_callback = &(dctalg->processBlock);
+		libjpeg_cbir_process_block_callback_object = dctalg;
+		libjpeg_cbir_process_block_callback = DCTSearchAlgorithm::processBlockWrapper;
 
 		/* Read all data into buffer */
 		JSAMPARRAY bugger = new JSAMPROW[cinfo.output_height];

@@ -13,12 +13,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     indexer.cpp \
     searchalgorithm.cpp \
-    rgbhistogram.cpp
+    rgbhistogram.cpp \
+    liuetal_v2.cpp
 
 HEADERS  += mainwindow.h \
     indexer.h \
     searchalgorithm.h \
-    rgbhistogram.h
+    rgbhistogram.h \
+    liuetal_v2.h
 
 FORMS    += mainwindow.ui
 

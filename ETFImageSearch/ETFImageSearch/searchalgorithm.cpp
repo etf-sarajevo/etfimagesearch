@@ -3,3 +3,7 @@
 SearchAlgorithm::SearchAlgorithm()
 {
 }
+
+DCTSearchAlgorithm::DCTSearchAlgorithm()
+{
+}

@@ -48,7 +48,16 @@ public:
 	// Call this after whole image is processed to get the final feature vector
 	virtual FeatureVector calculateVector()=0; 
 	
+	static void processBlockWrapper(void* object, short int* block, int component) {
+		DCTSearchAlgorithm* myself = (DCTSearchAlgorithm*) object;
+		myself->processBlock(block, component);
+	}
+	
 	virtual qreal distance(FeatureVector f1, FeatureVector f2)=0;
+	
+private:
+	// Disable this method
+	FeatureVector extractFeatures(const uchar* imageData, int size) {}
 };
 
 #endif // SEARCHALGORITHM_H

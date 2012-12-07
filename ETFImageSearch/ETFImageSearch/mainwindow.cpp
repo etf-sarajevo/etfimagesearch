@@ -7,6 +7,7 @@
 #include <QTextBrowser>
 
 #include "rgbhistogram.h"
+#include "liuetal_v2.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -21,7 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->treeView->setModel(fsm);
 	ui->treeView->setRootIndex(fsm->index(QDir::homePath()));
 	
-	currentAlgorithm = new RGBHistogram(256);
+	//currentAlgorithm = new RGBHistogram(256);
+	currentAlgorithm = new LiuEtAl_v2();
 	
 	idx = new Indexer(currentAlgorithm, QDir::homePath());
 	if (idx->indexed())
