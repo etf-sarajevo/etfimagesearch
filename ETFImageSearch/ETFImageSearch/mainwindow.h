@@ -33,6 +33,8 @@ private slots:
 	void indexingFile(QString fileName);
 	void finishedIndexing();
 	
+	void on_prtestButton_clicked();
+	
 private:
 	Ui::MainWindow *ui;
 	QFileSystemModel *fsm;

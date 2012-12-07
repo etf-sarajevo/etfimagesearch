@@ -8,6 +8,7 @@
 
 #include "rgbhistogram.h"
 #include "liuetal_v2.h"
+#include "prtest.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -46,10 +47,13 @@ void MainWindow::on_lineEdit_textChanged(const QString &path)
 		fsm->setRootPath(path);
 		ui->treeView->setRootIndex(fsm->index(path));
 		idx->setPath(path);
-		if (idx->indexed())
+		if (idx->indexed()) {
 			ui->searchButton->setEnabled(true);
-		else
+			ui->prtestButton->setEnabled(true);
+		} else {
 			ui->searchButton->setEnabled(false);
+			ui->prtestButton->setEnabled(false);
+		}
 	} else {
 		ui->lineEdit->setStyleSheet("QLineEdit { color: red }");
 	}
@@ -64,10 +68,13 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
 	ui->treeView->setRootIndex(index);
 	ui->lineEdit->setText(path);
 	idx->setPath(path);
-	if (idx->indexed())
+	if (idx->indexed()) {
 		ui->searchButton->setEnabled(true);
-	else
+		ui->prtestButton->setEnabled(true);
+	} else {
 		ui->searchButton->setEnabled(false);
+		ui->prtestButton->setEnabled(false);
+	}
 }
 
 void MainWindow::on_indexButton_clicked()
@@ -96,6 +103,18 @@ void MainWindow::on_searchButton_clicked()
 		br->show();
 	}
 }
+
+
+void MainWindow::on_prtestButton_clicked()
+{
+	PRTest prtest(ui->lineEdit->text(), currentAlgorithm);
+	if (!prtest.loadCategories()) {
+		QTextBrowser* br = new QTextBrowser(0);
+		br->setHtml("<h1>Precision-Recall test</h1><p>To run Precision-Recall test on your images, all images in this folder need to be classified into categories. Each image will be searched, and all results within the same category will be considered a &quot;hit&quot;, while other results will be &quot;miss&quot;. You need to create a file named categories.txt in the format:</p><tt>filename category</tt><p>Category is an arbitrary case-sensitive string that will be matched.</p>");
+		br->show();
+	}
+}
+
 
 void MainWindow::startedIndexing(int count)
 {

@@ -142,6 +142,7 @@ bool resultLessThen(const Indexer::Result& r1, const Indexer::Result& r2)
 // Search image with given filepath in current index (directory must be indexed)
 QVector<Indexer::Result> Indexer::search(QString filePath)
 {
+	QFileInfo fileInfo(filePath);
 	FeatureVector searchVector = getFV(filePath);
 	
 	QVector<Indexer::Result> results;
@@ -150,7 +151,7 @@ QVector<Indexer::Result> Indexer::search(QString filePath)
 		i.next();
 		Indexer::Result r;
 		r.fileName = i.key();
-		if (r.fileName == "0.jpg") continue;
+		if (r.fileName == fileInfo.fileName()) continue;
 		r.distance = alg->distance(searchVector, i.value());
 		results.push_back(r);
 	}
