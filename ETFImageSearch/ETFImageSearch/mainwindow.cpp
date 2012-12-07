@@ -85,10 +85,10 @@ void MainWindow::on_searchButton_clicked()
 		"Open Image for search", ui->lineEdit->text(), "JPEG Files (*.jpg)");
 	if (!fileName.isEmpty()) {
 		QVector<Indexer::Result> results = idx->search(fileName);
-		qDebug() << "TOP 10 RESULTS:";
 		QString result("TOP 10 RESULTS:\n");
+		//qDebug() << "TOP 10 RESULTS:";
 		for (int i(0); i<results.size(); i++) {
-			qDebug() << results[i].fileName << results[i].distance;
+			//qDebug() << results[i].fileName << results[i].distance;
 			if (i<10) result += QString("%1 %2\n").arg(results[i].fileName).arg(results[i].distance);
 		}
 		QTextBrowser* br = new QTextBrowser(0);

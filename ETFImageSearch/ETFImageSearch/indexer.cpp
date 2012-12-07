@@ -7,6 +7,8 @@
 #include <QImage>
 #include <QDebug>
 
+//#include <iostream>
+
 
 // Libraries from the hacked version of libjpeg
 extern "C" {
@@ -148,6 +150,7 @@ QVector<Indexer::Result> Indexer::search(QString filePath)
 		i.next();
 		Indexer::Result r;
 		r.fileName = i.key();
+		if (r.fileName == "0.jpg") continue;
 		r.distance = alg->distance(searchVector, i.value());
 		results.push_back(r);
 	}
@@ -169,7 +172,7 @@ void Indexer::createIndex()
 	QDir dir(path);
 	QFileInfoList list = dir.entryInfoList();
 	emit startedIndexing(list.size());
-	for (int i = 0; i < list.size(); ++i) {
+	for (int i = 0; i < list.size(); i++) {
 		QFileInfo fileInfo = list.at(i);
 		if (!fileInfo.isFile()) continue;
 		if (fileInfo.completeSuffix().toLower() != "jpg") continue;

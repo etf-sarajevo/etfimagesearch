@@ -14,7 +14,7 @@ extern "C" {
 class FeatureVector {
 public:
 	// Here further metadata can be added
-	QVector<int> features;
+	QVector<double> features;
 };
 
 class SearchAlgorithm

@@ -438,7 +438,7 @@ METHODDEF(void)
 prepare_for_output_pass (j_decompress_ptr cinfo)
 {
   my_master_ptr master = (my_master_ptr) cinfo->master;
-  fprintf(stderr, "Prepare for output pass %d\n", master->pass_number);
+//  fprintf(stderr, "Prepare for output pass %d\n", master->pass_number);
 
   if (master->pub.is_dummy_pass) {
 #ifdef QUANT_2PASS_SUPPORTED
