@@ -123,8 +123,8 @@ void MainWindow::on_searchButton_clicked()
 void MainWindow::on_prtestButton_clicked()
 {
 	PRTest prtest(ui->lineEdit->text(), currentAlgorithm, idx);
-//	if (!prtest.loadCategories()) {
-	if (!prtest.optimize()) {
+	if (!prtest.loadCategories()) {
+//	if (!prtest.optimize()) {
 		QTextBrowser* br = new QTextBrowser(0);
 		br->setHtml("<h1>Precision-Recall test</h1><p>To run Precision-Recall test on your images, all images in this folder need to be classified into categories. Each image will be searched, and all results within the same category will be considered a &quot;hit&quot;, while other results will be &quot;miss&quot;. You need to create a file named categories.txt in the format:</p><tt>filename category</tt><p>Category is an arbitrary case-sensitive string that will be matched.</p>");
 		br->show();
