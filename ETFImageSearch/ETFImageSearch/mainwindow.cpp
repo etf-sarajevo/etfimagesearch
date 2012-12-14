@@ -23,12 +23,27 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->treeView->setModel(fsm);
 	ui->treeView->setRootIndex(fsm->index(QDir::homePath()));
 	
-	//currentAlgorithm = new RGBHistogram(256);
+	// Add known algorithms to menu
+	QAction* rgbHistogramAction = ui->menuAlgorithm->addAction("RGB Histogram");
+	rgbHistogramAction->setCheckable(true);
+	connect (rgbHistogramAction, SIGNAL(triggered()), this, SLOT(rgbHistogram()));
+	
+	QAction* liuAction = ui->menuAlgorithm->addAction("Liu et al. v2");
+	liuAction->setCheckable(true);
+	liuAction->setChecked(true);
+	connect (liuAction, SIGNAL(triggered()), this, SLOT(liuAlgorithm()));
+
+	QActionGroup* algorithms = new QActionGroup(this);
+	algorithms->addAction(rgbHistogramAction);
+	algorithms->addAction(liuAction);
+	
 	currentAlgorithm = new LiuEtAl_v2();
 	
 	idx = new Indexer(currentAlgorithm, QDir::homePath());
-	if (idx->indexed())
+	if (idx->indexed()) {
 		ui->searchButton->setEnabled(true);
+		ui->prtestButton->setEnabled(true);
+	}
 }
 
 MainWindow::~MainWindow()
@@ -108,7 +123,8 @@ void MainWindow::on_searchButton_clicked()
 void MainWindow::on_prtestButton_clicked()
 {
 	PRTest prtest(ui->lineEdit->text(), currentAlgorithm, idx);
-	if (!prtest.loadCategories()) {
+//	if (!prtest.loadCategories()) {
+	if (!prtest.optimize()) {
 		QTextBrowser* br = new QTextBrowser(0);
 		br->setHtml("<h1>Precision-Recall test</h1><p>To run Precision-Recall test on your images, all images in this folder need to be classified into categories. Each image will be searched, and all results within the same category will be considered a &quot;hit&quot;, while other results will be &quot;miss&quot;. You need to create a file named categories.txt in the format:</p><tt>filename category</tt><p>Category is an arbitrary case-sensitive string that will be matched.</p>");
 		br->show();
@@ -140,3 +156,30 @@ void MainWindow::finishedIndexing()
 	progressDialog->setCancelButtonText("&Close");
 }
 
+void MainWindow::rgbHistogram()
+{
+	delete currentAlgorithm;
+	currentAlgorithm = new RGBHistogram(256);
+	idx->setAlgorithm(currentAlgorithm);
+	if (idx->indexed()) {
+		ui->searchButton->setEnabled(true);
+		ui->prtestButton->setEnabled(true);
+	} else {
+		ui->searchButton->setEnabled(false);
+		ui->prtestButton->setEnabled(false);
+	}
+}
+
+void MainWindow::liuAlgorithm()
+{
+	delete currentAlgorithm;
+	currentAlgorithm = new LiuEtAl_v2();
+	idx->setAlgorithm(currentAlgorithm);
+	if (idx->indexed()) {
+		ui->searchButton->setEnabled(true);
+		ui->prtestButton->setEnabled(true);
+	} else {
+		ui->searchButton->setEnabled(false);
+		ui->prtestButton->setEnabled(false);
+	}
+}

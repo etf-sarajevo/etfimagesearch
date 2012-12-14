@@ -29,11 +29,13 @@ private slots:
 	
 	void on_searchButton_clicked();
 	
+	void on_prtestButton_clicked();
+	
 	void startedIndexing(int count);
 	void indexingFile(QString fileName);
 	void finishedIndexing();
-	
-	void on_prtestButton_clicked();
+	void rgbHistogram();
+	void liuAlgorithm();
 	
 private:
 	Ui::MainWindow *ui;

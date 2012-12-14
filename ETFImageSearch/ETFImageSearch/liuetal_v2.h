@@ -18,6 +18,7 @@ public:
 	
 	qreal distance(FeatureVector f1, FeatureVector f2);
 	
+	void setkMEkD(double kME, double kD) { this->kME=kME; this->kD=kD; }
 	
 private:
 	// Stats
@@ -26,10 +27,21 @@ private:
 	int colorFeaturesCounters[MAX_COMPONENTS];
 	int colorFeaturesDoubleCounters[MAX_COMPONENTS];
 	
+	int totalMaxM, totalMinM;
+	int maxM, minM;
+	
+	int colorHistogram[MAX_COMPONENTS][64];
+	int colorHistogramCounter;
+	
+	int bigHistogram[512];
+	int previousComponent[MAX_COMPONENTS][4];
+	
 	double specificBlocks[MAX_COMPONENTS][6];
 	int specificBlocksLast1000[MAX_COMPONENTS][6];
 	double specificBlocksSquares[MAX_COMPONENTS][6];
 	int specificBlocksSquaresLast1000[MAX_COMPONENTS][6];
+	
+	double kME, kD;
 };
 
 #endif // LIUETAL_V2_H

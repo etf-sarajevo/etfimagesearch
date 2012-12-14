@@ -1,12 +1,16 @@
 #include "liuetal_v2.h"
 
 #include <cmath>
-//#include <iostream>
+#include <iostream>
 
 #define DEBUGLEVEL 0
 
 LiuEtAl_v2::LiuEtAl_v2() : DCTSearchAlgorithm()
 {
+	totalMaxM = -100;
+	totalMinM = 100;
+	kME = 0.06;
+	kD = 0.94;
 }
 
 void LiuEtAl_v2::init()
@@ -22,7 +26,18 @@ void LiuEtAl_v2::init()
 			specificBlocks[i][j] = specificBlocksLast1000[i][j] = 0;
 			specificBlocksSquares[i][j] = specificBlocksSquaresLast1000[i][j] = 0;
 		}
+		
+		for (j=0; j<64; j++) colorHistogram[i][j] = 0;
 	}
+	
+	maxM=0; minM=1024;
+	colorHistogramCounter=0;
+	
+	for (i=0; i<512; i++)
+		bigHistogram[i] = 0;
+	for (i=0; i<MAX_COMPONENTS; i++)
+		for (j=0; j<4; j++)
+			previousComponent[i][j]=0;
 }
 
 void LiuEtAl_v2::processBlock(short int* row, int component)
@@ -36,18 +51,51 @@ void LiuEtAl_v2::processBlock(short int* row, int component)
 	int M21 = (row[0] - row[1] + row[8] - row[9]) >> 4;
 	int M22 = (row[0] - row[1] - row[8] + row[9]) >> 4;
 	
+	// Max/min
+	if (M11>maxM) maxM=M11; if (M11<minM) minM=M11;
+	if (M12>maxM) maxM=M12; if (M12<minM) minM=M12;
+	if (M21>maxM) maxM=M21; if (M21<minM) minM=M21;
+	if (M22>maxM) maxM=M22; if (M22<minM) minM=M22;
+	
 	/*    if (currentComponent == 0 && colorFeaturesLast1000[currentComponent][0]==0) {
 		for (i=0; i<64; i++)
 			fprintf(stderr, "%d ",row[i]);
 		fprintf(stderr, "\n");
-	}*/
+	}*/	
+//	if (row[0] > maxM) maxM=row[0];
+//	if (row[0] < minM) minM = row[0];
 	
+	// Calculating Mxy means
 	colorFeaturesLast1000[component][0] += M11;
 	colorFeaturesLast1000[component][1] += M12;
 	colorFeaturesLast1000[component][2] += M21;
 	colorFeaturesLast1000[component][3] += M22;
 	
 	colorFeaturesCounters[component]++;
+	
+	// Calculating component histograms
+	colorHistogram[component][M11+32]++;
+	colorHistogram[component][M12+32]++;
+	colorHistogram[component][M21+32]++;
+	colorHistogram[component][M22+32]++;
+	colorHistogramCounter++;
+	
+	// Calculating total histogram
+	if (component==0 && colorHistogramCounter>1) {
+		int idx = (previousComponent[0][0] << 6) + (previousComponent[1][0] << 3) + previousComponent[2][0];
+		bigHistogram[idx]++;
+		idx = (previousComponent[0][1] << 6) + (previousComponent[1][1] << 3) + previousComponent[2][1];
+		bigHistogram[idx]++;
+		idx = (previousComponent[0][2] << 6) + (previousComponent[1][2] << 3) + previousComponent[2][2];
+		bigHistogram[idx]++;
+		idx = (previousComponent[0][3] << 6) + (previousComponent[1][3] << 3) + previousComponent[2][3];
+		bigHistogram[idx]++;
+	}
+	previousComponent[component][0] = (M11+32) >> 3;
+//	previousComponent[component][0] = row[0] >> 7;
+	previousComponent[component][1] = (M12+32) >> 3;
+	previousComponent[component][2] = (M21+32) >> 3;
+	previousComponent[component][3] = (M22+32) >> 3;
 	
 #if DEBUGLEVEL>1
 	printf ("row[0]=%d row[1]=%d row[2]=%d row[3]=%d\n", row[0], row[1], row[2], row[3]);
@@ -115,11 +163,16 @@ void LiuEtAl_v2::processBlock(short int* row, int component)
 FeatureVector LiuEtAl_v2::calculateVector()
 {
 	int i,j;
+	
+//	std::cout << "maxM "<<maxM<<" minM "<<minM<<std::endl;
+	if (maxM > totalMaxM) totalMaxM = maxM;
+	if (minM < totalMinM) totalMinM = minM;
+//g	std::cout << "maxM "<<totalMaxM<<" minM "<<totalMinM<<std::endl;
 
 	// Push data into FeatureVector
 	FeatureVector result;
 	// ME features
-	for (j=0; j<3; j++) {
+	/*for (j=0; j<3; j++) {
 		for (i=0; i<4; i++) {
 			double last1000Average = ((double)colorFeaturesLast1000[j][i]) / 1024;
 			colorFeatures[j][i] *= colorFeaturesDoubleCounters[j];
@@ -129,7 +182,30 @@ FeatureVector LiuEtAl_v2::calculateVector()
 			
 			result.features.push_back( colorFeatures[j][i] );
 		}
+	}*/
+	
+	// New features, based on histogram
+	for (j=0; j<3; j++) {
+		// Convert histogram to cumulative histogram and find maximum
+		int max=0;
+		for (int i=1; i<64; i++) {
+			colorHistogram[j][i] += colorHistogram[j][i-1];
+			if (colorHistogram[j][i] > max)
+				max = colorHistogram[j][i];
+		}
+		// Feature is (histogram / max) * 256
+		for (int i=0; i<64; i++)
+			result.features.push_back( 256 * qreal(colorHistogram[j][i]) / max );
 	}
+	
+	// One big histogram
+/*	int max=0;
+	for (j=0; j<512; j++) {
+		if (bigHistogram[j] > max) max=bigHistogram[j];
+	}
+	for (j=0; j<512; j++) {
+		result.features.push_back( 256 * qreal(bigHistogram[j]) / max);
+	}*/
 	
 	// D features
 	for (j=0; j<3; j++) {
@@ -165,17 +241,23 @@ qreal LiuEtAl_v2::distance(FeatureVector f1, FeatureVector f2)
 	qreal ME=0;
 	for (int k=0; k<3; k++) {
 		qreal sum=0;
-		for (int j=0; j<4; j++)
-			sum += pow(f1.features[k*4+j] - f2.features[k*4+j], 2);
+//		for (int j=0; j<4; j++)
+		for (int j=0; j<64; j++)
+			sum += pow(f1.features[k*64+j] - f2.features[k*64+j], 2);
 		ME += sqrt(sum);
 	}
 	//std::cout << "ME = "<<ME<<std::endl;
+/*	qreal sum=0;
+	for (int k=0; k<512; k++) {
+		sum += pow(f1.features[k] - f2.features[k], 2);
+	}
+	ME = sqrt(sum);*/
 
 	qreal D=0;
 	for (int k=0; k<3; k++) {
 		qreal sum=0;
 		for (int j=0; j<12; j++) {
-			sum += pow(f1.features[12 + k*12 + j] - f2.features[12 + k*12 + j], 2);
+			sum += pow(f1.features[192 + k*12 + j] - f2.features[192 + k*12 + j], 2);
 		}
 		D += sqrt(sum);
 	}
@@ -184,7 +266,8 @@ qreal LiuEtAl_v2::distance(FeatureVector f1, FeatureVector f2)
 	// Weighted formula in paper is absurd
 	// double W = 0.99999995*ME + 0.00000005*D;
 	// double W = pow(D,3)*ME;
-	qreal W = 0.9995*D + 0.005*ME;
+	// qreal W = 0.995*D + 0.005*ME;
+	qreal W = kD*D + kME*ME;
 	//std::cout << "W = "<<W<<std::endl;
 	
 	return W;

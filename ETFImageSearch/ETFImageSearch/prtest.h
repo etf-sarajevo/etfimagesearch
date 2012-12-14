@@ -12,6 +12,7 @@ public:
 	PRTest(QString path, SearchAlgorithm* alg, Indexer* idx);
 	
 	bool loadCategories();
+	bool optimize();
 	
 private:
 	QString path;

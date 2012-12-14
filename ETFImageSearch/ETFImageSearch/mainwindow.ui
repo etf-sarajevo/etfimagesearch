@@ -94,7 +94,6 @@
     <property name="title">
      <string>Algorithm</string>
     </property>
-    <addaction name="actionRGB_Histogram"/>
    </widget>
    <addaction name="menuAlgorithm"/>
   </widget>
