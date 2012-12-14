@@ -31,7 +31,7 @@ FORMS    += mainwindow.ui
 INCLUDEPATH += ../libjpeg-hacked
 
 win* {
-    LIBS += ..\\libjpeg-hacked\\libjpeg.a
+    LIBS += $$PWD/../libjpeg-hacked/libjpeg.a
 } else {
     LIBS += ../libjpeg-hacked/libjpeg.a
 }

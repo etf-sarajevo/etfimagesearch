@@ -1,6 +1,8 @@
 TEMPLATE = lib
 TARGET = jpeg
 
+DESTDIR=$$PWD
+
 CONFIG += console
 CONFIG -= qt
 CONFIG += staticlib
