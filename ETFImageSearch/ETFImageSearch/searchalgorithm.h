@@ -30,7 +30,9 @@ public:
 	virtual bool isDct() { return false; }
 	
 	// Calculate distance between two feature vectors
-	virtual qreal distance(FeatureVector f1, FeatureVector f2)=0;
+	virtual double distance(FeatureVector f1, FeatureVector f2)=0;
+	
+	bool debug;
 };
 
 class DCTSearchAlgorithm : public SearchAlgorithm
@@ -53,7 +55,7 @@ public:
 		myself->processBlock(block, component);
 	}
 	
-	virtual qreal distance(FeatureVector f1, FeatureVector f2)=0;
+	virtual double distance(FeatureVector f1, FeatureVector f2)=0;
 	
 private:
 	// Disable this method

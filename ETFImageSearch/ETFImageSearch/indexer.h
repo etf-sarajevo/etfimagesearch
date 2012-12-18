@@ -21,7 +21,7 @@ public:
 	
 	struct Result {
 		QString fileName;
-		qreal distance;
+		double distance;
 	};
 	
 	QVector<Result> search(QString filePath);

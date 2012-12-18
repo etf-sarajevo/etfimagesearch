@@ -16,7 +16,7 @@ public:
 	void processBlock(short int* block, int component);
 	FeatureVector calculateVector();
 	
-	qreal distance(FeatureVector f1, FeatureVector f2);
+	double distance(FeatureVector f1, FeatureVector f2);
 	
 	void setkMEkD(double kME, double kD) { this->kME=kME; this->kD=kD; }
 	

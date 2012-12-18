@@ -22,11 +22,14 @@ bool PRTest::loadCategories()
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return false;
 	
-	QMap<QString, QString> categories;
+	QMap<QString, QStringList> categories;
 	while (!file.atEnd()) {
-		QString line(file.readLine());
+		QString line(file.readLine().trimmed());
 		QStringList parts = line.split(' ', QString::SkipEmptyParts);
-		categories[parts[0]] = parts[1];
+		QString catFile = parts[0];
+		parts.removeFirst();
+		if (parts.size() == 0) continue; // skip files that are in no categories
+		categories[catFile] = parts;
 	}
 	file.close();
 
@@ -36,7 +39,8 @@ bool PRTest::loadCategories()
 	
 	QVector<double> precision(10), recall(10);
 	
-	QMapIterator<QString, QString> i(categories);
+	QMapIterator<QString, QStringList> i(categories);
+	int count(0);
 	while (i.hasNext()) {
 		i.next();
 
@@ -44,23 +48,33 @@ bool PRTest::loadCategories()
 		progressDialog->setValue(progressDialog->value()+1);
 
 		QVector<Indexer::Result> results = idx->search(path + QDir::separator() + i.key());
-		int relevantDocs(0);
+		double relevantDocs(0);
 		for (int k=0; k<10; k++) {
 			for (int j=k*16; j<(k+1)*16; j++) {
-				if (categories[results[j].fileName] == i.value()) 
-					relevantDocs++;
+				QString cat;
+				int wordsFound(0);
+				foreach (cat, i.value()) {
+					if (categories[results[j].fileName].contains(cat)) {
+						wordsFound++;
+					}
+				}
+				relevantDocs += double(wordsFound) / i.value().size();
+				//if (found) break;
 			}
 			precision[k] += qreal(relevantDocs) / ((k+1)*16);
 			recall[k] += qreal(relevantDocs) / 100;
 		}
+		count++;
+		//if (count == 2) break;
 	}
 	
 	for (int i=0; i<10; i++) {
-		precision[i] /= categories.size();
-		recall[i] /= categories.size();
+		precision[i] /= count; //categories.size();
+		recall[i] /= count; //categories.size();
 	}
+	
+	qDebug() << precision[0];
 
-	// /home/vedran/mms/etfimagesearch/trunk/wang1000/image.orig
 	progressDialog->hide();
 	int passed = time.msecsTo(QTime::currentTime());
 	
@@ -71,7 +85,7 @@ bool PRTest::loadCategories()
 	qcp->xAxis->setLabel("Recall");
 	qcp->yAxis->setLabel("Precision");
 	qcp->xAxis->setRange(0, 0.7);
-	qcp->yAxis->setRange(0.3, 0.8);
+	qcp->yAxis->setRange(0, 1);
 	qcp->replot();
 	
 	qcp->show();
@@ -135,6 +149,8 @@ bool PRTest::optimize()
 	}
 
 	// /home/vedran/mms/etfimagesearch/trunk/wang1000/image.orig
+	// /home/vedran/cbir/etfimagesearch/trunk/wang1000/image.orig
+	// /home/vedran/cbir/etfimagesearch/trunk/mirflickr-25000/images
 	progressDialog->hide();
 	int passed = time.msecsTo(QTime::currentTime());
 	

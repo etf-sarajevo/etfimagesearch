@@ -10,7 +10,7 @@ public:
 	
 	QString name() { return QString("rgbhistogram"); }
 	FeatureVector extractFeatures(const uchar* imageData, int size);
-	qreal distance(FeatureVector f1, FeatureVector f2);	
+	double distance(FeatureVector f1, FeatureVector f2);	
 	
 private:
 	FeatureVector result;

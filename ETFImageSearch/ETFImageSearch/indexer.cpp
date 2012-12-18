@@ -7,7 +7,9 @@
 #include <QImage>
 #include <QDebug>
 
-//#include <iostream>
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
 
 // Libraries from the hacked version of libjpeg
@@ -118,7 +120,7 @@ FeatureVector Indexer::getFV(QString imagePath)
 		fclose(input_file);
 
 		for (int i=0; i<cinfo.output_height; i++)
-			delete bugger[i];
+			delete[] bugger[i];
 		delete [] bugger;
 
 
@@ -145,7 +147,9 @@ QVector<Indexer::Result> Indexer::search(QString filePath)
 	QFileInfo fileInfo(filePath);
 	FeatureVector searchVector = getFV(filePath);
 	
-	QVector<Indexer::Result> results;
+//	QVector<Indexer::Result> results;
+	std::vector<Indexer::Result> results;
+	QMap<double, QString> resultsMap;
 	QMapIterator<QString, FeatureVector> i(index);
 	while (i.hasNext()) {
 		i.next();
@@ -156,9 +160,9 @@ QVector<Indexer::Result> Indexer::search(QString filePath)
 		results.push_back(r);
 	}
 	
-	qSort(results.begin(), results.end(), resultLessThen);
+	sort(results.begin(), results.end(), resultLessThen);
 	
-	return results;
+	return QVector<Indexer::Result>::fromStdVector(results);
 }
 
 
@@ -176,7 +180,7 @@ void Indexer::createIndex()
 	for (int i = 0; i < list.size(); i++) {
 		QFileInfo fileInfo = list.at(i);
 		if (!fileInfo.isFile()) continue;
-		if (fileInfo.completeSuffix().toLower() != "jpg") continue;
+		if (fileInfo.suffix().toLower() != "jpg") continue;
 		
 		//qDebug() << "Indexing "<<fileInfo.fileName();
 		emit indexingFile(fileInfo.fileName());

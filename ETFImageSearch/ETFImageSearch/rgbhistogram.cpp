@@ -57,7 +57,7 @@ FeatureVector RGBHistogram::extractFeatures(const uchar *imageData, int size)
 	return result;
 }
 
-qreal RGBHistogram::distance(FeatureVector f1, FeatureVector f2)
+double RGBHistogram::distance(FeatureVector f1, FeatureVector f2)
 {
 	// Euclidean distance
 	int sum(0);

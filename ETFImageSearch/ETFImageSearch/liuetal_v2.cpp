@@ -11,6 +11,7 @@ LiuEtAl_v2::LiuEtAl_v2() : DCTSearchAlgorithm()
 	totalMinM = 100;
 	kME = 0.06;
 	kD = 0.94;
+	debug = false;
 }
 
 void LiuEtAl_v2::init()
@@ -81,7 +82,7 @@ void LiuEtAl_v2::processBlock(short int* row, int component)
 	colorHistogramCounter++;
 	
 	// Calculating total histogram
-	if (component==0 && colorHistogramCounter>1) {
+/*	if (component==0 && colorHistogramCounter>1) {
 		int idx = (previousComponent[0][0] << 6) + (previousComponent[1][0] << 3) + previousComponent[2][0];
 		bigHistogram[idx]++;
 		idx = (previousComponent[0][1] << 6) + (previousComponent[1][1] << 3) + previousComponent[2][1];
@@ -90,7 +91,7 @@ void LiuEtAl_v2::processBlock(short int* row, int component)
 		bigHistogram[idx]++;
 		idx = (previousComponent[0][3] << 6) + (previousComponent[1][3] << 3) + previousComponent[2][3];
 		bigHistogram[idx]++;
-	}
+	}*/
 	previousComponent[component][0] = (M11+32) >> 3;
 //	previousComponent[component][0] = row[0] >> 7;
 	previousComponent[component][1] = (M12+32) >> 3;
@@ -236,7 +237,7 @@ FeatureVector LiuEtAl_v2::calculateVector()
 }
 
 
-qreal LiuEtAl_v2::distance(FeatureVector f1, FeatureVector f2)
+double LiuEtAl_v2::distance(FeatureVector f1, FeatureVector f2)
 {
 	qreal ME=0;
 	for (int k=0; k<3; k++) {
@@ -246,7 +247,8 @@ qreal LiuEtAl_v2::distance(FeatureVector f1, FeatureVector f2)
 			sum += pow(f1.features[k*64+j] - f2.features[k*64+j], 2);
 		ME += sqrt(sum);
 	}
-	//std::cout << "ME = "<<ME<<std::endl;
+	
+	if (debug) std::cout << "ME = "<<ME<<std::endl;
 /*	qreal sum=0;
 	for (int k=0; k<512; k++) {
 		sum += pow(f1.features[k] - f2.features[k], 2);
@@ -261,7 +263,7 @@ qreal LiuEtAl_v2::distance(FeatureVector f1, FeatureVector f2)
 		}
 		D += sqrt(sum);
 	}
-	//std::cout << "D = "<<D<<std::endl;
+	if (debug) std::cout << "D = "<<D<<std::endl;
 
 	// Weighted formula in paper is absurd
 	// double W = 0.99999995*ME + 0.00000005*D;
