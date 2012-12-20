@@ -16,7 +16,9 @@ SOURCES += main.cpp\
     rgbhistogram.cpp \
     liuetal_v2.cpp \
     prtest.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    yuvhistogram.cpp \
+    hsvhistogram.cpp
 
 HEADERS  += mainwindow.h \
     indexer.h \
@@ -24,7 +26,9 @@ HEADERS  += mainwindow.h \
     rgbhistogram.h \
     liuetal_v2.h \
     prtest.h \
-    qcustomplot.h
+    qcustomplot.h \
+    yuvhistogram.h \
+    hsvhistogram.h
 
 FORMS    += mainwindow.ui
 
@@ -33,5 +37,5 @@ INCLUDEPATH += ../libjpeg-hacked
 win* {
     LIBS += $$PWD/../libjpeg-hacked/libjpeg.a
 } else {
-    LIBS += ../libjpeg-hacked/libjpeg.a
+    LIBS += $$PWD/../libjpeg-hacked/libjpeg.a
 }

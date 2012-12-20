@@ -7,6 +7,8 @@
 #include <QTextBrowser>
 
 #include "rgbhistogram.h"
+#include "hsvhistogram.h"
+#include "yuvhistogram.h"
 #include "liuetal_v2.h"
 #include "prtest.h"
 
@@ -27,6 +29,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	QAction* rgbHistogramAction = ui->menuAlgorithm->addAction("RGB Histogram");
 	rgbHistogramAction->setCheckable(true);
 	connect (rgbHistogramAction, SIGNAL(triggered()), this, SLOT(rgbHistogram()));
+	
+	QAction* hsvHistogramAction = ui->menuAlgorithm->addAction("HSV Histogram");
+	hsvHistogramAction->setCheckable(true);
+	connect (hsvHistogramAction, SIGNAL(triggered()), this, SLOT(hsvHistogram()));
+	
+	QAction* yuvHistogramAction = ui->menuAlgorithm->addAction("YUV Histogram");
+	yuvHistogramAction->setCheckable(true);
+	connect (yuvHistogramAction, SIGNAL(triggered()), this, SLOT(yuvHistogram()));
 	
 	QAction* liuAction = ui->menuAlgorithm->addAction("Liu et al. v2");
 	liuAction->setCheckable(true);
@@ -159,7 +169,35 @@ void MainWindow::finishedIndexing()
 void MainWindow::rgbHistogram()
 {
 	delete currentAlgorithm;
-	currentAlgorithm = new RGBHistogram(256);
+	currentAlgorithm = new RGBHistogram(3, 3, 3);
+	idx->setAlgorithm(currentAlgorithm);
+	if (idx->indexed()) {
+		ui->searchButton->setEnabled(true);
+		ui->prtestButton->setEnabled(true);
+	} else {
+		ui->searchButton->setEnabled(false);
+		ui->prtestButton->setEnabled(false);
+	}
+}
+
+void MainWindow::hsvHistogram()
+{
+	delete currentAlgorithm;
+	currentAlgorithm = new HSVHistogram(4, 2, 2);
+	idx->setAlgorithm(currentAlgorithm);
+	if (idx->indexed()) {
+		ui->searchButton->setEnabled(true);
+		ui->prtestButton->setEnabled(true);
+	} else {
+		ui->searchButton->setEnabled(false);
+		ui->prtestButton->setEnabled(false);
+	}
+}
+
+void MainWindow::yuvHistogram()
+{
+	delete currentAlgorithm;
+	currentAlgorithm = new YUVHistogram(2,2,2);
 	idx->setAlgorithm(currentAlgorithm);
 	if (idx->indexed()) {
 		ui->searchButton->setEnabled(true);

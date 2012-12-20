@@ -6,7 +6,7 @@
 class RGBHistogram : public SearchAlgorithm
 {
 public:
-	RGBHistogram(int bins);
+	RGBHistogram(int Rbits, int Gbits, int Bbits);
 	
 	QString name() { return QString("rgbhistogram"); }
 	FeatureVector extractFeatures(const uchar* imageData, int size);
@@ -14,7 +14,7 @@ public:
 	
 private:
 	FeatureVector result;
-	int bins;
+	int Rbits, Gbits, Bbits;
 };
 
 #endif // RGBHISTOGRAM_H

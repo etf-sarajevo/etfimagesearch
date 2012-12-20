@@ -35,6 +35,8 @@ private slots:
 	void indexingFile(QString fileName);
 	void finishedIndexing();
 	void rgbHistogram();
+	void hsvHistogram();
+	void yuvHistogram();
 	void liuAlgorithm();
 	
 private:

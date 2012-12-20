@@ -3,53 +3,32 @@
 #include <QDebug>
 #include <cmath>
 
-RGBHistogram::RGBHistogram(int bins = 512) : SearchAlgorithm(), bins(bins)
+RGBHistogram::RGBHistogram(int Rbits=3, int Gbits=3, int Bbits=3) : SearchAlgorithm(), 
+	Rbits(Rbits), Gbits(Gbits), Bbits(Bbits)
 {
-	result.features.resize(bins);
+	result.features.resize( pow(2, Rbits+Gbits+Bbits) );
 }
 
 FeatureVector RGBHistogram::extractFeatures(const uchar *imageData, int size)
 {
-	// Calculate divisor for color values
-	int divisorR(0), divisorG(0), divisorB(0);
-	
-	// Simple case
-	for (int i(1); i<=8; i++) {
-		if (bins == pow(2,3*i))
-			divisorR = divisorG = divisorB = 8-i;
-	}
-	
-	// A more complex case
-	if (divisorR == 0)
-		for (int i(1); i<=24; i++)
-			if (bins == pow(2,i)) {
-				divisorR = divisorG = divisorB = 8-i/3;
-				if (i%3 == 1)
-					divisorG--;
-				if (i%3 == 2) {
-					divisorR--;
-					divisorG--;
-				}
-			}
-	
-	int powerR = (8 - divisorG) + (8 - divisorB);
-	int powerG = 8 - divisorB;
-
 	// Calculate histogram
 	for (int i(0); i<size; i+=3) {
-		uint index = (imageData[i] >> divisorR) << powerR;
-		index += (imageData[i+1] >> divisorG) << powerG;
-		index += (imageData[i+2] >> divisorB);
+		uint index = (imageData[i] >> (8 - Rbits) ) << (Gbits + Bbits);
+		index += (imageData[i+1] >> (8 - Gbits)) << Bbits;
+		index += (imageData[i+2] >> (8 - Bbits));
 		
 		result.features[index]++;
+/*		result.features[imageData[i] >> 2]++;
+		result.features[(imageData[i+1] >> 2)+64]++;
+		result.features[(imageData[i+2] >> 2)+128]++;*/
 	}
 	
 	// Renormalize feature vector to 1 byte per feature
 	qreal max(0);
-	for (int i(0); i<bins; i++)
+	for (int i(0); i<result.features.size(); i++)
 		if (result.features[i] > max)
 			max = result.features[i];
-	for (int i(0); i<bins; i++) {
+	for (int i(0); i<result.features.size(); i++) {
 		qreal x = qreal(result.features[i]) / max;
 		result.features[i] = x*256;
 	}
