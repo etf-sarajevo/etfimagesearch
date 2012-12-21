@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     prtest.cpp \
     qcustomplot.cpp \
     yuvhistogram.cpp \
-    hsvhistogram.cpp
+    hsvhistogram.cpp \
+    rgbsplithistogram.cpp
 
 HEADERS  += mainwindow.h \
     indexer.h \
@@ -28,7 +29,8 @@ HEADERS  += mainwindow.h \
     prtest.h \
     qcustomplot.h \
     yuvhistogram.h \
-    hsvhistogram.h
+    hsvhistogram.h \
+    rgbsplithistogram.h
 
 FORMS    += mainwindow.ui
 

@@ -9,6 +9,7 @@
 #include "rgbhistogram.h"
 #include "hsvhistogram.h"
 #include "yuvhistogram.h"
+#include "rgbsplithistogram.h"
 #include "liuetal_v2.h"
 #include "prtest.h"
 
@@ -25,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->treeView->setModel(fsm);
 	ui->treeView->setRootIndex(fsm->index(QDir::homePath()));
 	
+	ui->treeView->setColumnWidth(0, 200);
+	
 	// Add known algorithms to menu
 	QAction* rgbHistogramAction = ui->menuAlgorithm->addAction("RGB Histogram");
 	rgbHistogramAction->setCheckable(true);
@@ -37,6 +40,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	QAction* yuvHistogramAction = ui->menuAlgorithm->addAction("YUV Histogram");
 	yuvHistogramAction->setCheckable(true);
 	connect (yuvHistogramAction, SIGNAL(triggered()), this, SLOT(yuvHistogram()));
+
+	QAction* rgbSplitHistogramAction = ui->menuAlgorithm->addAction("RGB Split Histogram");
+	rgbSplitHistogramAction->setCheckable(true);
+	connect (rgbSplitHistogramAction, SIGNAL(triggered()), this, SLOT(rgbSplitHistogram()));
 	
 	QAction* liuAction = ui->menuAlgorithm->addAction("Liu et al. v2");
 	liuAction->setCheckable(true);
@@ -180,6 +187,20 @@ void MainWindow::rgbHistogram()
 	}
 }
 
+void MainWindow::rgbSplitHistogram()
+{
+	delete currentAlgorithm;
+	currentAlgorithm = new RGBSplitHistogram(6, 6, 6);
+	idx->setAlgorithm(currentAlgorithm);
+	if (idx->indexed()) {
+		ui->searchButton->setEnabled(true);
+		ui->prtestButton->setEnabled(true);
+	} else {
+		ui->searchButton->setEnabled(false);
+		ui->prtestButton->setEnabled(false);
+	}
+}
+
 void MainWindow::hsvHistogram()
 {
 	delete currentAlgorithm;
@@ -197,7 +218,7 @@ void MainWindow::hsvHistogram()
 void MainWindow::yuvHistogram()
 {
 	delete currentAlgorithm;
-	currentAlgorithm = new YUVHistogram(2,2,2);
+	currentAlgorithm = new YUVHistogram(2,3,3);
 	idx->setAlgorithm(currentAlgorithm);
 	if (idx->indexed()) {
 		ui->searchButton->setEnabled(true);

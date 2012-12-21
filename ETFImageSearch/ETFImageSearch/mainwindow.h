@@ -38,6 +38,7 @@ private slots:
 	void hsvHistogram();
 	void yuvHistogram();
 	void liuAlgorithm();
+	void rgbSplitHistogram();
 	
 private:
 	Ui::MainWindow *ui;

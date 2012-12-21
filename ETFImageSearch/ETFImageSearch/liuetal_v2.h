@@ -30,7 +30,7 @@ private:
 	int totalMaxM, totalMinM;
 	int maxM, minM;
 	
-	int colorHistogram[MAX_COMPONENTS][64];
+	int colorHistogram[MAX_COMPONENTS][256];
 	int colorHistogramCounter;
 	
 	int bigHistogram[512];

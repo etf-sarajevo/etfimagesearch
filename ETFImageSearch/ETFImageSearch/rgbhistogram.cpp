@@ -18,16 +18,15 @@ FeatureVector RGBHistogram::extractFeatures(const uchar *imageData, int size)
 		index += (imageData[i+2] >> (8 - Bbits));
 		
 		result.features[index]++;
-/*		result.features[imageData[i] >> 2]++;
-		result.features[(imageData[i+1] >> 2)+64]++;
-		result.features[(imageData[i+2] >> 2)+128]++;*/
 	}
 	
 	// Renormalize feature vector to 1 byte per feature
 	qreal max(0);
-	for (int i(0); i<result.features.size(); i++)
+	for (int i(0); i<result.features.size(); i++) {
+//		result.features[i] += result.features[i-1];
 		if (result.features[i] > max)
 			max = result.features[i];
+	}
 	for (int i(0); i<result.features.size(); i++) {
 		qreal x = qreal(result.features[i]) / max;
 		result.features[i] = x*256;
