@@ -37,10 +37,10 @@ bool PRTest::loadCategories()
 	progressDialog->show();
 	QTime time = QTime::currentTime();
 	
-	QVector<double> precision(10), recall(10);
+/*	QVector<double> precision(11), recall(11);
+	int searchedFiles(0);
 	
-	QMapIterator<QString, QStringList> i(categories);
-	int count(0);
+	QMapIterator<QString, QString> i(categories);
 	while (i.hasNext()) {
 		i.next();
 
@@ -48,43 +48,151 @@ bool PRTest::loadCategories()
 		progressDialog->setValue(progressDialog->value()+1);
 
 		QVector<Indexer::Result> results = idx->search(path + QDir::separator() + i.key());
-		double relevantDocs(0);
+		QVector<double> APprecision(results.size());
+		QVector<double> AMPprecision(results.size());
+		int relevantDocsAP(0);
+		double relevantDocsAMP(0);
+		for (int k=0; k<results.size(); k++) {
+			int wordsFound(0);
+			QString cat;
+			foreach (cat, i.value()) {
+				if (categories[results[k].fileName].contains(cat))
+					wordsFound++;
+			}
+			if (wordsFound>0) relevantDocsAP++;
+			relevantDocsAMP += double(wordsFound) / i.value().size();
+			
+			APprecision[k] = double(relevantDocsAP) / (k+1);
+			AMPprecision[k] = relevantDocsAMP / (k+1);
+		}
+		
+		int targetPrecision(10);
+		double targetRecall(1), maxAPprecision(0), maxAMPprecision(0);
+		for (int k=results.size()-1; k>=0; k--) {
+			if (APprecision[k]>maxAPprecision) maxAPprecision=APprecision[k];
+			while (APprecision[k]*k / relevantDocsAP < targetRecall) {
+				precision[targetPrecision] = maxAPprecision;
+				targetPrecision--;
+				targetRecall -= 0.1;
+			}
+		}
+		
+/*		int relevantDocs(0);
 		for (int k=0; k<10; k++) {
 			for (int j=k*16; j<(k+1)*16; j++) {
-				QString cat;
-				int wordsFound(0);
-				foreach (cat, i.value()) {
-					if (categories[results[j].fileName].contains(cat)) {
-						wordsFound++;
-					}
-				}
-				relevantDocs += double(wordsFound) / i.value().size();
-				//if (found) break;
+				if (categories[results[j].fileName] == i.value()) 
+					relevantDocs++;
 			}
 			precision[k] += qreal(relevantDocs) / ((k+1)*16);
 			recall[k] += qreal(relevantDocs) / 100;
-		}
-		count++;
-		//if (count == 2) break;
+		}*//*
 	}
 	
 	for (int i=0; i<10; i++) {
-		precision[i] /= count; //categories.size();
-		recall[i] /= count; //categories.size();
+		precision[i] /= categories.size();
+		recall[i] /= categories.size();
+	}
+
+	// /home/vedran/mms/etfimagesearch/trunk/wang1000/image.orig
+	qDebug() << "MAP10 = " << precision[0];*/
+	
+	QVector<double> PRGraph(11);
+	double AP16(0), AWP16(0);
+	int counter(0);
+
+	QMapIterator<QString, QStringList> i(categories);
+	while (i.hasNext()) {
+		i.next();
+
+		progressDialog->setLabelText(QString("Searching file %1").arg(i.key()));
+		progressDialog->setValue(progressDialog->value()+1);
+
+		// Create PR graph for file i
+		QVector<double> PRGraphI(11);
+		QVector<Indexer::Result> results = idx->search(path + QDir::separator() + i.key());
+		
+		int relevantDocs(0);
+		QVector<double> cumulativeRelevantDocs(results.size());
+		double AP16k(0), AWP16k(0);
+		
+		for (int k=0; k<results.size(); k++) {
+			// Is result k relevant?
+			int wordsFound(0);
+			QString cat;
+			foreach (cat, i.value()) {
+				if (categories[results[k].fileName].contains(cat))
+					wordsFound++;
+			}
+
+/*			if (wordsFound>0) {
+				qDebug()<<results[k].fileName<<"cat: "<<cat<<" words:" <<categories[results[k].fileName];
+			}*/
+			
+			if (wordsFound>0) relevantDocs++;
+			cumulativeRelevantDocs[k] = relevantDocs;
+			
+			if (k<16 && wordsFound>0) AP16k++;
+			if (k<16) AWP16k += double(wordsFound) / i.value().size();
+		}
+		
+		// PR graph is using interpolated precision (IP)
+		// IP(i) = max( P(i), P(i+1), ..., P(size) )
+		double maxPrecision=0;
+		double currentRecall=1;
+		int currentPRIndex=10;
+		
+		for (int k=results.size()-1; k>=0; k--) {
+			// Calculate precision and recall for index k
+			double precision = double(cumulativeRelevantDocs[k]) / (k+1);
+			double recall = double(cumulativeRelevantDocs[k]) / relevantDocs;
+			if (precision > maxPrecision) maxPrecision = precision;
+			
+			// Did we reach the recall bracket?
+			if (recall < currentRecall) {
+				PRGraphI[currentPRIndex] = maxPrecision;
+				currentPRIndex--;
+				currentRecall -= 0.1;
+			}
+		}
+		
+		// Add value for recall==0 if neccessarry
+		if (currentPRIndex == 0) {
+			PRGraphI[0] = maxPrecision;
+		}
+		
+		// Update averages for PRgraph
+		for (int i(0); i<11; i++) {
+			PRGraph[i] = ( PRGraph[i]*counter + PRGraphI[i] ) / (counter+1);
+		}
+		
+		AP16  = (  AP16 * counter + AP16k  / 16 ) / (counter+1);
+		AWP16 = ( AWP16 * counter + AWP16k / 16 ) / (counter+1);
+		
+		counter++;
 	}
 	
-	qDebug() << precision[0];
-
+	// AP
+	double AP=0;
+	for (int i(0); i<11; i++)
+		AP += PRGraph[i];
+	AP /= 11;
+	qDebug() << "AP = " << AP << "AP16 = "<<AP16<<" AWP16 = "<<AWP16;
+	
+	QVector<double> XAxis(11);
+	XAxis[0] = 0;
+	for (int i(1); i<11; i++)
+		XAxis[i] = XAxis[i-1] + 0.1;
+	
 	progressDialog->hide();
 	int passed = time.msecsTo(QTime::currentTime());
 	
 	QCustomPlot* qcp = new QCustomPlot;
 	qcp->setTitle(QString("Precision-Recall graph - %1 s").arg(qreal(passed)/1000));
 	qcp->addGraph();
-	qcp->graph(0)->setData(recall, precision);
+	qcp->graph(0)->setData(XAxis, PRGraph);
 	qcp->xAxis->setLabel("Recall");
 	qcp->yAxis->setLabel("Precision");
-	qcp->xAxis->setRange(0, 0.7);
+	qcp->xAxis->setRange(0, 1);
 	qcp->yAxis->setRange(0, 1);
 	qcp->replot();
 	
@@ -149,8 +257,6 @@ bool PRTest::optimize()
 	}
 
 	// /home/vedran/mms/etfimagesearch/trunk/wang1000/image.orig
-	// /home/vedran/cbir/etfimagesearch/trunk/wang1000/image.orig
-	// /home/vedran/cbir/etfimagesearch/trunk/mirflickr-25000/images
 	progressDialog->hide();
 	int passed = time.msecsTo(QTime::currentTime());
 	
