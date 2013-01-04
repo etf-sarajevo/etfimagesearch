@@ -314,7 +314,7 @@ decompress_onepass (j_decompress_ptr cinfo, JSAMPIMAGE output_buf)
   JDIMENSION start_col, output_col;
   jpeg_component_info *compptr;
   inverse_DCT_method_ptr inverse_DCT;
-
+  
   /* Loop to process as much as one whole iMCU row */
   for (yoffset = coef->MCU_vert_offset; yoffset < coef->MCU_rows_per_iMCU_row;
        yoffset++) {
@@ -367,6 +367,9 @@ decompress_onepass (j_decompress_ptr cinfo, JSAMPIMAGE output_buf)
       blkn = 0;			/* index of current DCT block within MCU */
       for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
 	compptr = cinfo->cur_comp_info[ci];
+	short * quantptr = (short *) compptr->dct_table;
+
+    //printf("Quant %d\n", quantptr[0]);
 	/* Don't bother to IDCT an uninteresting component. */
 	if (! compptr->component_needed) {
 	  blkn += compptr->MCU_blocks;

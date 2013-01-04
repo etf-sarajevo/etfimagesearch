@@ -15,7 +15,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow), fsm(0)
+	ui(new Ui::MainWindow), fsm(0), progressDialog(0)
 {
 	ui->setupUi(this);
 	
@@ -52,6 +52,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	QActionGroup* algorithms = new QActionGroup(this);
 	algorithms->addAction(rgbHistogramAction);
+	algorithms->addAction(hsvHistogramAction);
+	algorithms->addAction(yuvHistogramAction);
+	algorithms->addAction(rgbSplitHistogramAction);
 	algorithms->addAction(liuAction);
 	
 	currentAlgorithm = new LiuEtAl_v2();
@@ -151,6 +154,11 @@ void MainWindow::on_prtestButton_clicked()
 
 void MainWindow::startedIndexing(int count)
 {
+	if (progressDialog) {
+		progressDialog->hide();
+		progressDialog->close();
+		progressDialog->deleteLater();
+	}
 	progressDialog = new QProgressDialog("Indexing files", QString(), 0, count);
 	progressDialog->setAutoReset(false);
 	progressDialog->show();
@@ -190,7 +198,7 @@ void MainWindow::rgbHistogram()
 void MainWindow::rgbSplitHistogram()
 {
 	delete currentAlgorithm;
-	currentAlgorithm = new RGBSplitHistogram(6, 6, 6);
+	currentAlgorithm = new RGBSplitHistogram(4, 4, 4);
 	idx->setAlgorithm(currentAlgorithm);
 	if (idx->indexed()) {
 		ui->searchButton->setEnabled(true);

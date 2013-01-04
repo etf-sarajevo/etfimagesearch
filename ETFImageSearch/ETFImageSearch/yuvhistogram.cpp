@@ -18,7 +18,7 @@ int toByte(int x) {
 FeatureVector YUVHistogram::extractFeatures(const uchar *imageData, int size)
 {
 	// Calculate histogram
-	for (int i(0); i<size; i+=3) {
+	for (int i(0); i<size; i+=4) {
 		// Translate RGB to interval [0,1]
 /*		double R=double(imageData[i])/256, G=double(imageData[i+1])/256, B=double(imageData[i+2])/256;
 		
@@ -33,16 +33,16 @@ FeatureVector YUVHistogram::extractFeatures(const uchar *imageData, int size)
 		U = (U+0.436)*256 / 0.872; if (U<0) U=0; if (U>255) U=255;
 		V = (V+0.615)*256 / 1.230; if (V<0) V=0; if (V>255) V=255;*/
 		
-		int R = imageData[i], G = imageData[i+1], B = imageData[i+2];
+		int R = imageData[i+2], G = imageData[i+1], B = imageData[i];
 		
-		int Y = toByte ( 0.299*R + 0.587 * G + 0.114 * B );
-		int U = toByte ( 128 - 0.168736*R - 0.331264*G + 0.5*B );
-		int V = toByte ( 128 + 0.5*R - 0.418688*G - 0.081312*B );
+		int Y = toByte ( 0.299 * R + 0.587 * G + 0.114 * B );
+		int U = toByte ( 128 - 0.168736 * R - 0.331264 * G + 0.5 * B );
+		int V = toByte ( 128 + 0.5 * R - 0.418688 * G - 0.081312 * B );
 		
 		uint index = (int(Y) >> (8-Ybits)) << (Ubits+Vbits);
 		index += (int(U) >> (8-Ubits)) << Vbits;
 		index += (int(V) >> (8-Vbits));
-		
+
 		result.features[index]++;
 	}
 	

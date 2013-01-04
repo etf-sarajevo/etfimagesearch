@@ -97,7 +97,7 @@ bool PRTest::loadCategories()
 	qDebug() << "MAP10 = " << precision[0];*/
 	
 	QVector<double> PRGraph(11);
-	double AP16(0), AWP16(0);
+	double AP16(0), AWP16(0), ANMRR(0);
 	int counter(0);
 
 	QMapIterator<QString, QStringList> i(categories);
@@ -152,12 +152,13 @@ bool PRTest::loadCategories()
 				PRGraphI[currentPRIndex] = maxPrecision;
 				currentPRIndex--;
 				currentRecall -= 0.1;
+				k++;
 			}
 		}
 		
 		// Add value for recall==0 if neccessarry
-		if (currentPRIndex == 0) {
-			PRGraphI[0] = maxPrecision;
+		while (currentPRIndex >= 0) {
+			PRGraphI[currentPRIndex--] = maxPrecision;
 		}
 		
 		// Update averages for PRgraph
@@ -165,8 +166,36 @@ bool PRTest::loadCategories()
 			PRGraph[i] = ( PRGraph[i]*counter + PRGraphI[i] ) / (counter+1);
 		}
 		
+		// Calculate ANMRR
+		// Since ground truth is large, we use K=NG*2
+		double AVR(0), K(relevantDocs*2);
+		for (int k(0); k<results.size(); k++) {
+			// Is result k relevant?
+			int wordsFound(0);
+			QString cat;
+			foreach (cat, i.value()) {
+				if (categories[results[k].fileName].contains(cat))
+					wordsFound++;
+			}
+			
+			if (wordsFound == 0) continue;
+			
+			// Result is relevant, calculate rank
+			if (k > K)
+				AVR += K * 1.25;
+			else
+				AVR += k;
+		}
+		AVR = AVR / relevantDocs;
+		
+		double MRR(AVR - 0.5*(1+relevantDocs));
+		double NMRR = MRR / (1.25*K - 0.5*(1+relevantDocs));
+
+		if (relevantDocs == 0) continue;
+		
 		AP16  = (  AP16 * counter + AP16k  / 16 ) / (counter+1);
 		AWP16 = ( AWP16 * counter + AWP16k / 16 ) / (counter+1);
+		ANMRR = ( ANMRR * counter + NMRR ) / (counter + 1);
 		
 		counter++;
 	}
@@ -176,7 +205,7 @@ bool PRTest::loadCategories()
 	for (int i(0); i<11; i++)
 		AP += PRGraph[i];
 	AP /= 11;
-	qDebug() << "AP = " << AP << "AP16 = "<<AP16<<" AWP16 = "<<AWP16;
+	qDebug() << "AP = " << AP << "AP16 = "<<AP16<<" AWP16 = "<<AWP16 << " ANMRR = "<<ANMRR;
 	
 	QVector<double> XAxis(11);
 	XAxis[0] = 0;

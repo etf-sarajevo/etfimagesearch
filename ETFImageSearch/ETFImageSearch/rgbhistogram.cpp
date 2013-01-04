@@ -12,10 +12,10 @@ RGBHistogram::RGBHistogram(int Rbits=3, int Gbits=3, int Bbits=3) : SearchAlgori
 FeatureVector RGBHistogram::extractFeatures(const uchar *imageData, int size)
 {
 	// Calculate histogram
-	for (int i(0); i<size; i+=3) {
-		uint index = (imageData[i] >> (8 - Rbits) ) << (Gbits + Bbits);
+	for (int i(0); i<size; i+=4) {
+		uint index = (imageData[i+2] >> (8 - Rbits) ) << (Gbits + Bbits);
 		index += (imageData[i+1] >> (8 - Gbits)) << Bbits;
-		index += (imageData[i+2] >> (8 - Bbits));
+		index += (imageData[i+0] >> (8 - Bbits));
 		
 		result.features[index]++;
 	}
