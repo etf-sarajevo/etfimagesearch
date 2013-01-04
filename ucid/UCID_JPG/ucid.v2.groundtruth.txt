@@ -1,0 +1,1181 @@
+# UCID v2 ground truth file
+#
+# Query1:
+#    Model1forQuery1
+#    Model2forQuery1
+#    ...
+# 
+# Query2:
+#    Model1forQuery2
+#    ...
+
+
+ucid00001.tif:
+  ucid00015.tif
+  ucid00038.tif
+  ucid00240.tif
+
+ucid00009.tif:
+  ucid00010.tif
+
+ucid00013.tif:
+  ucid00014.tif
+
+ucid00029.tif:
+  ucid00028.tif
+  ucid00210.tif
+
+ucid00060.tif:
+  ucid00061.tif
+
+ucid00063.tif:
+  ucid00064.tif
+  ucid00065.tif
+
+ucid00072.tif:
+  ucid00074.tif
+
+ucid00085.tif:
+  ucid00088.tif
+
+ucid00089.tif:
+  ucid00090.tif
+
+ucid00095.tif:
+  ucid00096.tif
+
+ucid00100.tif:
+  ucid00098.tif
+
+ucid00103.tif:
+  ucid00104.tif
+
+ucid00110.tif:
+  ucid00107.tif
+  ucid00108.tif
+
+ucid00112.tif:
+  ucid00105.tif
+
+ucid00114.tif:
+  ucid00115.tif
+  ucid00117.tif
+
+ucid00121.tif:
+  ucid00119.tif
+  ucid00120.tif
+  ucid00122.tif
+  ucid00123.tif
+  ucid00124.tif
+  ucid00219.tif
+  ucid00222.tif
+  ucid00223.tif
+
+ucid00125.tif:
+  ucid00124.tif
+
+ucid00127.tif:
+  ucid00126.tif
+
+ucid00133.tif:
+  ucid00134.tif
+
+ucid00136.tif:
+  ucid00141.tif
+  ucid00142.tif
+
+ucid00137.tif:
+  ucid00138.tif
+  ucid00139.tif
+  ucid00153.tif
+
+ucid00143.tif:
+  ucid00144.tif
+
+ucid00145.tif:
+  ucid00146.tif
+
+ucid00149.tif:
+  ucid00150.tif
+
+ucid00156.tif:
+  ucid00157.tif
+  ucid00158.tif
+  ucid00159.tif
+
+ucid00163.tif:
+  ucid00162.tif
+  ucid00164.tif
+
+ucid00167.tif:
+  ucid00168.tif
+
+ucid00171.tif:
+  ucid00170.tif
+
+ucid00172.tif:
+  ucid00173.tif
+
+ucid00180.tif:
+  ucid00181.tif
+  ucid00185.tif
+
+ucid00183.tif:
+  ucid00182.tif
+
+ucid00192.tif:
+  ucid00034.tif
+
+ucid00196.tif:
+  ucid00197.tif
+
+ucid00198.tif:
+  ucid00199.tif
+
+ucid00200.tif:
+  ucid00201.tif
+
+ucid00203.tif:
+  ucid00204.tif
+
+ucid00206.tif:
+  ucid00030.tif
+  ucid00031.tif
+  ucid00032.tif
+  ucid00075.tif
+  ucid00187.tif
+  ucid00188.tif
+  ucid00189.tif
+  ucid00190.tif
+  ucid00191.tif
+  ucid00207.tif
+  ucid00208.tif
+  ucid00209.tif
+
+ucid00212.tif:
+  ucid00211.tif
+  ucid00213.tif
+  ucid00214.tif
+
+ucid00217.tif:
+  ucid00215.tif
+  ucid00216.tif
+  ucid00218.tif
+
+ucid00229.tif:
+  ucid00225.tif
+  ucid00226.tif
+  ucid00227.tif
+  ucid00228.tif
+  ucid00230.tif
+
+ucid00231.tif:
+  ucid00232.tif
+  ucid00233.tif
+
+ucid00234.tif:
+  ucid00235.tif
+  ucid00236.tif
+
+ucid00239.tif:
+  ucid00019.tif
+  ucid00020.tif
+  ucid00238.tif
+
+ucid00243.tif:
+  ucid00242.tif
+  ucid00244.tif
+
+ucid00249.tif:
+  ucid00248.tif
+
+ucid00251.tif:
+  ucid00253.tif
+
+ucid00254.tif:
+  ucid00255.tif
+  ucid00256.tif
+  ucid00259.tif
+  ucid00375.tif
+
+ucid00262.tif:
+  ucid00263.tif
+  ucid00264.tif
+
+ucid00265.tif:
+  ucid00266.tif
+  ucid00267.tif
+
+ucid00268.tif:
+  ucid00269.tif
+
+ucid00273.tif:
+  ucid00272.tif
+
+ucid00274.tif:
+  ucid00277.tif
+
+ucid00275.tif:
+  ucid00276.tif
+
+ucid00278.tif:
+  ucid00281.tif
+
+ucid00284.tif:
+  ucid00285.tif
+
+ucid00286.tif:
+  ucid00287.tif
+
+ucid00288.tif:
+  ucid00289.tif
+
+ucid00290.tif:
+  ucid00291.tif
+  ucid00332.tif
+
+ucid00292.tif:
+  ucid00293.tif
+
+ucid00295.tif:
+  ucid00296.tif
+
+ucid00297.tif:
+  ucid00298.tif
+
+ucid00300.tif:
+  ucid00301.tif
+  ucid00302.tif
+
+ucid00303.tif:
+  ucid00325.tif
+
+ucid00307.tif:
+  ucid00282.tif
+  ucid00306.tif
+
+ucid00308.tif:
+  ucid00309.tif
+
+ucid00312.tif:
+  ucid00250.tif
+
+ucid00320.tif:
+  ucid00319.tif
+  ucid00321.tif
+  ucid00376.tif
+  ucid00391.tif
+
+ucid00323.tif:
+  ucid00322.tif
+
+ucid00326.tif:
+  ucid00327.tif
+
+ucid00329.tif:
+  ucid00330.tif
+
+ucid00334.tif:
+  ucid00335.tif
+
+ucid00336.tif:
+  ucid00337.tif
+
+ucid00340.tif:
+  ucid00339.tif
+  ucid00354.tif
+  ucid00355.tif
+  ucid00356.tif
+  ucid00357.tif
+  ucid00362.tif
+  ucid00363.tif
+  ucid00364.tif
+  ucid00392.tif
+  ucid00393.tif
+
+ucid00341.tif:
+  ucid00342.tif
+
+ucid00344.tif:
+  ucid00502.tif
+  ucid00504.tif
+  ucid00506.tif
+  ucid00508.tif
+  ucid00509.tif
+  ucid00530.tif
+  ucid00531.tif
+  ucid01175.tif
+  ucid01177.tif
+  ucid01179.tif
+  ucid01181.tif
+  ucid01183.tif
+  ucid01184.tif
+  ucid01191.tif
+  ucid01199.tif
+
+ucid00346.tif:
+  ucid00347.tif
+
+ucid00351.tif:
+  ucid00387.tif
+  ucid00423.tif
+  ucid00424.tif
+  ucid00425.tif
+  ucid00426.tif
+
+ucid00352.tif:
+  ucid00368.tif
+  ucid00369.tif
+  ucid00370.tif
+  ucid00371.tif
+  ucid00372.tif
+  ucid00491.tif
+
+
+ucid00358.tif:
+  ucid00359.tif
+
+ucid00360.tif:
+  ucid00361.tif
+
+ucid00365.tif:
+  ucid00366.tif
+  ucid00367.tif
+
+ucid00373.tif:
+  ucid00382.tif
+  ucid00385.tif
+  ucid00389.tif
+
+ucid00374.tif:
+  ucid00384.tif
+  ucid00388.tif
+  ucid00390.tif
+
+ucid00380.tif:
+  ucid00377.tif
+  ucid00378.tif
+  ucid00379.tif
+  ucid00381.tif
+  ucid00383.tif
+  ucid00386.tif
+  ucid00396.tif
+  ucid00397.tif
+  ucid00421.tif
+  ucid00493.tif
+
+ucid00394.tif:
+  ucid00395.tif
+
+ucid00401.tif:
+  ucid00402.tif
+
+ucid00403.tif:
+  ucid00404.tif
+
+ucid00418.tif:
+  ucid00417.tif
+
+ucid00419.tif:
+  ucid00415.tif
+
+ucid00428.tif:
+  ucid00427.tif
+
+ucid00429.tif:
+  ucid00430.tif
+
+ucid00431.tif:
+  ucid00432.tif
+
+ucid00434.tif:
+  ucid00433.tif
+  ucid00435.tif
+
+ucid00437.tif:
+  ucid00438.tif
+  ucid00440.tif
+  ucid00441.tif
+
+ucid00445.tif:
+  ucid00446.tif
+  ucid00447.tif
+  ucid00448.tif
+
+ucid00450.tif:
+  ucid00449.tif
+
+ucid00455.tif:
+  ucid00454.tif
+  ucid00456.tif
+
+ucid00457.tif:
+  ucid00458.tif
+
+ucid00460.tif:
+  ucid00461.tif
+
+ucid00463.tif:
+  ucid00464.tif
+  ucid00465.tif
+
+ucid00466.tif:
+  ucid00488.tif
+  ucid00489.tif
+
+ucid00467.tif:
+  ucid00468.tif
+
+ucid00474.tif:
+  ucid00475.tif
+
+ucid00477.tif:
+  ucid00478.tif
+
+ucid00482.tif:
+  ucid00483.tif
+
+ucid00484.tif:
+  ucid00485.tif
+
+ucid00486.tif:
+  ucid00487.tif
+
+ucid00494.tif:
+  ucid00338.tif
+
+ucid00497.tif:
+  ucid00535.tif
+
+ucid00498.tif:
+  ucid00499.tif
+  ucid00536.tif
+  ucid01168.tif
+
+ucid00500.tif:
+  ucid00539.tif
+
+ucid00501.tif:
+  ucid01165.tif
+  ucid01166.tif
+
+ucid00505.tif:
+  ucid01194.tif
+
+ucid00513.tif:
+  ucid00512.tif
+  ucid00516.tif
+  ucid00517.tif
+  ucid00522.tif
+
+ucid00514.tif:
+  ucid00518.tif
+  ucid00520.tif
+
+ucid00523.tif:
+  ucid00524.tif
+
+ucid00526.tif:
+  ucid00528.tif
+
+ucid00527.tif:
+  ucid01182.tif
+
+ucid00532.tif:
+  ucid00533.tif
+
+ucid00534.tif:
+  ucid00540.tif
+
+ucid00541.tif:
+  ucid00543.tif
+  ucid00562.tif
+
+ucid00548.tif:
+  ucid00544.tif
+  ucid00545.tif
+  ucid00546.tif
+  ucid00547.tif
+  ucid00549.tif
+  ucid00550.tif
+  ucid00551.tif
+  ucid00552.tif
+  ucid00553.tif
+  ucid00554.tif
+  ucid00555.tif
+  ucid00556.tif
+  ucid00557.tif
+  ucid00558.tif
+  ucid00559.tif
+  ucid00560.tif
+  ucid00561.tif
+
+ucid00565.tif:
+  ucid00563.tif
+  ucid00564.tif
+  ucid00566.tif
+  ucid00567.tif
+  ucid00574.tif
+
+ucid00568.tif:
+  ucid00570.tif
+
+ucid00571.tif:
+  ucid00620.tif
+
+ucid00577.tif:
+  ucid00576.tif
+  ucid00578.tif
+
+ucid00575.tif:
+  ucid00582.tif
+
+ucid00583.tif:
+  ucid00573.tif
+  ucid00584.tif
+  ucid00585.tif
+  ucid00586.tif
+  ucid00588.tif
+  ucid00593.tif
+  ucid00594.tif
+  ucid00595.tif
+  ucid00614.tif
+  ucid00615.tif
+
+ucid00587.tif:
+  ucid00589.tif
+  ucid00591.tif
+  ucid00592.tif
+  ucid00597.tif
+  ucid00601.tif
+  ucid00602.tif
+
+ucid00598.tif:
+  ucid00604.tif
+
+ucid00600.tif:
+  ucid00605.tif
+
+ucid00608.tif:
+  ucid00609.tif
+  ucid00611.tif
+  ucid00612.tif
+
+ucid00617.tif:
+  ucid00584.tif
+  ucid00616.tif
+
+ucid00618.tif:
+  ucid00619.tif
+
+ucid00621.tif:
+  ucid00622.tif
+  ucid00623.tif
+  ucid00628.tif
+  ucid00629.tif
+
+ucid00626.tif:
+  ucid00579.tif
+  ucid00580.tif
+  ucid00624.tif
+  ucid00627.tif
+  ucid00630.tif
+  ucid00631.tif
+  ucid00632.tif
+  ucid00636.tif
+
+ucid00634.tif:
+  ucid00635.tif
+
+ucid00636.tif:
+  ucid00637.tif
+
+ucid00638.tif:
+  ucid00639.tif
+  ucid00686.tif
+  ucid00689.tif
+  ucid00693.tif
+
+ucid00640.tif:
+  ucid00642.tif
+  ucid00643.tif
+  ucid00690.tif
+
+ucid00641.tif:
+  ucid00691.tif
+  ucid00699.tif
+
+ucid00645.tif:
+  ucid00648.tif
+  ucid00681.tif
+  ucid00729.tif
+
+ucid00647.tif:
+  ucid00655.tif
+  ucid00667.tif
+  ucid00668.tif
+  ucid00671.tif
+  ucid00672.tif
+  ucid00723.tif
+  ucid00732.tif
+
+ucid00649.tif:
+  ucid00652.tif
+  ucid00679.tif
+
+ucid00650.tif:
+  ucid00646.tif
+  ucid00651.tif
+  ucid00678.tif
+  ucid00685.tif
+  ucid00721.tif
+  ucid00728.tif
+
+ucid00653.tif:
+  ucid00673.tif
+
+ucid00661.tif:
+  ucid00662.tif
+  ucid00717.tif
+  ucid00718.tif
+
+ucid00664.tif:
+  ucid00665.tif
+
+ucid00669.tif:
+  ucid00644.tif
+  ucid00692.tif
+  ucid00724.tif
+
+ucid00677.tif:
+  ucid00725.tif
+
+ucid00682.tif:
+  ucid00688.tif
+  ucid00730.tif
+
+ucid00683.tif:
+  ucid00676.tif
+  ucid00684.tif
+  ucid00731.tif
+
+ucid00695.tif:
+  ucid00675.tif
+  ucid00694.tif
+  ucid00698.tif
+  ucid00701.tif
+  ucid00702.tif
+  ucid00703.tif
+  ucid00704.tif
+  ucid00705.tif
+  ucid00711.tif
+  ucid00712.tif
+
+ucid00708.tif:
+  ucid00697.tif
+  ucid00707.tif
+  ucid00710.tif
+
+ucid00713.tif:
+  ucid00709.tif
+  ucid00737.tif
+  ucid00738.tif
+
+ucid00714.tif:
+  ucid00715.tif
+  ucid00716.tif
+
+ucid00726.tif:
+  ucid00733.tif
+
+ucid00727.tif:
+  ucid00734.tif
+  ucid00735.tif
+
+ucid00739.tif:
+  ucid00719.tif
+  ucid00740.tif
+  ucid00741.tif
+
+ucid00743.tif:
+  ucid00657.tif
+  ucid00659.tif
+
+ucid00749.tif:
+  ucid00784.tif
+  ucid00946.tif
+  ucid00951.tif
+  ucid00956.tif
+  ucid00961.tif
+  ucid00977.tif
+
+ucid00752.tif:
+  ucid00754.tif
+  ucid00757.tif
+
+ucid00766.tif:
+  ucid01146.tif
+
+ucid00775.tif:
+  ucid00792.tif
+  ucid00983.tif
+
+ucid00777.tif:
+  ucid00772.tif
+  ucid00776.tif
+  ucid00791.tif
+
+ucid00781.tif:
+  ucid00761.tif
+  ucid00765.tif
+  ucid01122.tif
+  ucid01124.tif
+  ucid01145.tif
+
+ucid00785.tif:
+  ucid00747.tif
+  ucid00748.tif
+  ucid00751.tif
+  ucid00782.tif
+  ucid00783.tif
+  ucid00798.tif
+  ucid00938.tif
+  ucid00940.tif
+  ucid00948.tif
+  ucid00950.tif
+  ucid00963.tif
+  ucid01077.tif
+
+ucid00799.tif:
+  ucid00800.tif
+
+ucid00801.tif:
+  ucid00802.tif
+  ucid00844.tif
+
+ucid00803.tif:
+  ucid00804.tif
+  ucid00805.tif
+  ucid00806.tif
+  ucid00807.tif
+  ucid00808.tif
+  ucid00809.tif
+  ucid01131.tif
+  ucid01134.tif
+  ucid01143.tif
+
+ucid00810.tif:
+  ucid00760.tif
+  ucid00762.tif
+  ucid00763.tif
+  ucid00811.tif
+  ucid00892.tif
+  ucid00893.tif
+  ucid00898.tif
+
+ucid00812.tif:
+  ucid00813.tif
+  ucid00814.tif
+  ucid00815.tif
+
+ucid00819.tif:
+  ucid00816.tif
+  ucid00817.tif
+  ucid00818.tif
+  ucid00820.tif
+  ucid00892.tif
+
+ucid00824.tif:
+  ucid00822.tif
+  ucid00823.tif
+  ucid00825.tif
+  ucid00826.tif
+
+ucid00827.tif:
+  ucid00828.tif
+  ucid00829.tif
+  ucid00874.tif
+  ucid01025.tif
+
+ucid00831.tif:
+  ucid00832.tif
+  ucid00833.tif
+  ucid00834.tif
+  ucid00837.tif
+  ucid00840.tif
+  ucid00841.tif
+
+ucid00838.tif:
+  ucid00839.tif
+
+ucid00850.tif:
+  ucid01031.tif
+  ucid01064.tif
+
+ucid00853.tif:
+  ucid01032.tif
+  ucid01067.tif
+
+ucid00855.tif:
+  ucid01033.tif
+  ucid01068.tif
+
+ucid00856.tif:
+  ucid00845.tif
+  ucid01034.tif
+  ucid01069.tif
+
+ucid00857.tif:
+  ucid00858.tif
+  ucid00863.tif
+  ucid00864.tif
+  ucid00865.tif
+  ucid01038.tif
+
+ucid00860.tif:
+  ucid00859.tif
+  ucid00861.tif
+  ucid00862.tif
+
+ucid00868.tif:
+  ucid00867.tif
+  ucid00869.tif
+  ucid00870.tif
+  ucid00871.tif
+
+ucid00879.tif:
+  ucid00877.tif
+  ucid00878.tif
+  ucid00880.tif
+  ucid00881.tif
+
+ucid00884.tif:
+  ucid00883.tif
+  ucid00888.tif
+
+ucid00889.tif:
+  ucid00891.tif
+  ucid00895.tif
+
+ucid00894.tif:
+  ucid00926.tif
+  ucid00928.tif
+
+ucid00896.tif:
+  ucid00897.tif
+  ucid00899.tif
+  ucid00900.tif
+  ucid00910.tif
+  ucid00925.tif
+
+ucid00902.tif:
+  ucid00901.tif
+  ucid00904.tif
+  ucid00905.tif
+
+ucid00903.tif:
+  ucid00909.tif
+  ucid00914.tif
+
+ucid00906.tif:
+  ucid00907.tif
+
+ucid00917.tif:
+  ucid01008.tif
+
+ucid00919.tif:
+  ucid00918.tif
+
+ucid00920.tif:
+  ucid00927.tif
+  ucid00929.tif
+  ucid00933.tif
+
+ucid00924.tif:
+  ucid00931.tif
+  ucid00935.tif
+
+ucid00932.tif:
+  ucid00924.tif
+  ucid00936.tif
+
+ucid00937.tif:
+  ucid00758.tif
+  ucid00793.tif
+  ucid00794.tif
+  ucid00795.tif
+  ucid00797.tif
+  ucid00939.tif
+  ucid00952.tif
+  ucid00958.tif
+  ucid00965.tif
+  ucid00966.tif
+  ucid00967.tif
+  ucid00973.tif
+  ucid00979.tif
+  ucid01004.tif
+  ucid01076.tif
+  ucid01141.tif
+
+ucid00944.tif:
+  ucid00941.tif
+
+ucid00945.tif:
+  ucid00949.tif
+
+ucid00947.tif:
+  ucid00955.tif
+
+ucid00953.tif:
+  ucid01005.tif
+
+ucid00957.tif:
+  ucid00959.tif
+
+
+ucid00962.tif:
+  ucid00954.tif
+  ucid00960.tif
+  ucid00976.tif
+
+ucid00970.tif:
+  ucid00974.tif
+  ucid00975.tif
+  ucid00978.tif
+
+ucid00980.tif:
+  ucid00981.tif
+  ucid00984.tif
+
+ucid00986.tif:
+  ucid00744.tif
+  ucid00746.tif
+  ucid00759.tif
+  ucid00994.tif
+  ucid00999.tif
+  ucid01123.tif
+  ucid01147.tif
+
+ucid00989.tif:
+  ucid00987.tif
+
+ucid01009.tif:
+  ucid01010.tif
+  ucid01011.tif
+  ucid01012.tif
+  ucid01013.tif
+  ucid01014.tif
+
+ucid01015.tif:
+  ucid01016.tif
+
+ucid01017.tif:
+  ucid01019.tif
+  ucid01020.tif
+
+ucid01022.tif:
+  ucid01061.tif
+
+ucid01023.tif:
+  ucid01024.tif
+  ucid01026.tif
+  ucid01037.tif
+
+ucid01030.tif:
+  ucid00849.tif
+  ucid01063.tif
+
+ucid01035.tif:
+  ucid01036.tif
+
+ucid01039.tif:
+  ucid01040.tif
+  ucid01041.tif
+
+ucid01043.tif:
+  ucid01044.tif
+  ucid01045.tif
+
+ucid01050.tif:
+  ucid01049.tif
+  ucid01051.tif
+
+ucid01052.tif:
+  ucid01056.tif
+
+ucid01059.tif:
+  ucid01060.tif
+
+ucid01073.tif:
+  ucid01072.tif
+  ucid01074.tif
+
+ucid01083.tif:
+  ucid01081.tif
+  ucid01084.tif
+
+ucid01079.tif:
+  ucid01086.tif
+  ucid01089.tif
+
+ucid01090.tif:
+  ucid01091.tif
+
+ucid01096.tif:
+  ucid01097.tif
+
+ucid01099.tif:
+  ucid01100.tif
+
+ucid01101.tif:
+  ucid01102.tif
+  ucid01103.tif
+
+ucid01104.tif:
+  ucid01105.tif
+
+ucid01106.tif:
+  ucid01107.tif
+
+ucid01116.tif:
+  ucid01115.tif
+
+ucid01117.tif:
+  ucid01118.tif
+
+ucid01125.tif:
+  ucid00764.tif
+  ucid00786.tif
+  ucid00985.tif
+  ucid00995.tif
+
+ucid01135.tif:
+  ucid01136.tif
+
+ucid01137.tif:
+  ucid01139.tif
+
+ucid01144.tif:
+  ucid00972.tif
+  ucid01000.tif
+  ucid01003.tif
+  ucid01132.tif
+
+ucid01153.tif:
+  ucid01152.tif
+  ucid01154.tif
+
+ucid01161.tif:
+  ucid01160.tif
+  ucid01162.tif
+  ucid01163.tif
+
+ucid01171.tif:
+  ucid01172.tif
+  ucid01173.tif
+
+ucid01195.tif:
+  ucid01196.tif
+  ucid01197.tif
+  ucid01198.tif
+  ucid01200.tif
+
+ucid01201.tif:
+  ucid01202.tif
+  ucid01226.tif
+  ucid01227.tif
+  ucid01228.tif
+  ucid01229.tif
+  ucid01231.tif
+  ucid01237.tif
+
+ucid01209.tif:
+  ucid01208.tif
+  ucid01213.tif
+
+ucid01216.tif:
+  ucid01219.tif
+
+ucid01225.tif:
+  ucid01224.tif
+
+ucid01238.tif:
+  ucid01239.tif
+
+ucid01247.tif:
+  ucid01246.tif
+  ucid01251.tif
+
+ucid01248.tif:
+  ucid01249.tif
+  ucid01250.tif
+
+ucid01253.tif:
+  ucid01252.tif
+  ucid01254.tif
+  ucid01256.tif
+
+ucid01262.tif:
+  ucid01259.tif
+
+ucid01261.tif:
+  ucid01263.tif
+
+ucid01268.tif:
+  ucid01270.tif
+  ucid01271.tif
+
+ucid01273.tif:
+  ucid01275.tif
+  ucid01286.tif
+  ucid01287.tif
+  ucid01288.tif
+
+ucid01278.tif:
+  ucid01279.tif
+
+ucid01283.tif:
+  ucid01284.tif
+
+ucid01291.tif:
+  ucid01289.tif
+  ucid01290.tif
+  ucid01292.tif
+  ucid01293.tif
+  ucid01294.tif
+  ucid01295.tif
+
+ucid01302.tif:
+  ucid01311.tif
+
+ucid01303.tif:
+  ucid01310.tif
+
+ucid01307.tif:
+  ucid01301.tif
+  ucid01306.tif
+  ucid01309.tif
+  ucid01312.tif
+  ucid01313.tif
+
+ucid01314.tif:
+  ucid01315.tif
+  ucid01316.tif
+  ucid01317.tif
+
+ucid01320.tif:
+  ucid01319.tif
+
+ucid01324.tif:
+  ucid01325.tif
+
+ucid01326.tif:
+  ucid01327.tif
+  ucid01328.tif
+  ucid01329.tif
+
+ucid01334.tif:
+  ucid01335.tif
+  ucid01336.tif
+
+
