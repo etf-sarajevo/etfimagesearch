@@ -34,6 +34,11 @@ private slots:
 	void startedIndexing(int count);
 	void indexingFile(QString fileName);
 	void finishedIndexing();
+	
+	void startedPRTest(int count);
+	void testingFile(QString fileName);
+	void finishedPRTest();
+	
 	void rgbHistogram();
 	void hsvHistogram();
 	void yuvHistogram();

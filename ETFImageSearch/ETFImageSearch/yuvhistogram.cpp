@@ -58,16 +58,58 @@ FeatureVector YUVHistogram::extractFeatures(const uchar *imageData, int size)
 		result.features[i] = x*256;
 	}
 	
+	/*for (int i = 0; i < result.features.size(); i++) {
+		result.features[i] = int ( (result.features[i] / (size/4)) * 65536 );
+	}
+	return result;*/
 	return result;
 }
 
 double YUVHistogram::distance(FeatureVector f1, FeatureVector f2)
 {
-	// Euclidean distance
+	/*// Euclidean distance
 	int sum(0);
 	for (int i(0); i<f1.features.size(); i++) {
 		sum += (f2.features[i] - f1.features[i]) * (f2.features[i] - f1.features[i]);
 	}
-	return sqrt(qreal(sum));
+	return sqrt(qreal(sum));*/
+	
+	// Matshita distance
+	double sum(0);
+	for (int i(0); i<f1.features.size(); i++) {
+		double k = sqrt(f2.features[i]) - sqrt(f1.features[i]);
+		sum += k * k;
+	}
+	return sqrt(sum);
+	
+	/*// Bray-Curtis distance
+	double sum1(0), sum2(0);
+	for (int i(0); i<f1.features.size(); i++) {
+		sum1 += double(abs(f2.features[i] - f1.features[i]));
+		sum2 += (f2.features[i] + f1.features[i]);
+	}
+	return sum1 / sum2;*/
+	
+	/*// Manhattan distance
+	int sum(0);
+	for (int i(0); i<f1.features.size(); i++) {
+		sum += abs(f2.features[i] - f1.features[i]);
+	}
+	return sum;*/
+	
+	/*// Bhatacharyya distance
+	double sum(0), sum1(0);
+	for (int i(0); i<f1.features.size(); i++) {
+		sum += sqrt(fabs(f2.features[i] - f1.features[i]));
+		sum1 += f1.features[i];
+	}
+	return log10(sum/sum1);*/
+	
+	/*// Chi-Square distance
+	double sum(0);
+	for (int i(0); i<f1.features.size(); i++) {
+		sum += ((f2.features[i] - f1.features[i])*(f2.features[i] - f1.features[i])) / (f2.features[i] + f1.features[i]);
+	}
+	return sum;*/
 }
 

@@ -45,6 +45,17 @@ void LiuEtAl_v2::processBlock(short int* row, int component)
 {
 	int i;
 
+	static int Ytable[64] = { 3, 2, 2, 3,  5,  8, 10, 12, 2, 2, 3,  4,  5, 12, 12, 11, 3, 3,  3,  5,  8, 11, 14, 11, 3,  3,  4,  6, 10, 17, 16, 12, 4, 4, 7, 11, 14, 22, 21, 15, 5, 7,  11, 13, 16, 21, 23, 18, 10, 13, 16, 17, 21, 24, 24, 20, 14, 18, 19, 20, 22, 20, 21, 20 };
+	static int Ctable[64] = { 3, 4, 5, 9, 20, 20, 20, 20, 4, 4, 5, 13, 20, 20, 20, 20, 5, 5, 11, 20, 20, 20, 20, 20, 9, 13, 20, 20 };
+	
+	/*if (component == 0) {
+		row[0] /= Ytable[0]; row[1] /= Ytable[1]; row[8] /= Ytable[8]; row[9] /= Ytable[9];
+	} else {
+		row[0] /= Ctable[0]; row[1] /= Ctable[1]; row[8] /= Ctable[8]; row[9] /= Ctable[9];
+	}*/
+	
+	//std::cout << " - " << row[0] << " " << row[1] << " " << row[8] << " " << row[9] << std::endl;
+	
 	// Calculate coefficients M11 M12 M21 M22 from paper
 	// libjpeg is not zigzag!!!
 	int M11 = (row[0] + row[1] + row[8] + row[9]) >> 4;
@@ -60,10 +71,10 @@ void LiuEtAl_v2::processBlock(short int* row, int component)
 	if (M22>maxM) maxM=M22; if (M22<minM) minM=M22;
 	
 	/*    if (currentComponent == 0 && colorFeaturesLast1000[currentComponent][0]==0) {
-		for (i=0; i<64; i++)
+		for (i=0; i<64; i++) 
 			fprintf(stderr, "%d ",row[i]);
 		fprintf(stderr, "\n");
-	}*/	
+	}*/
 //	if (row[0] > maxM) maxM=row[0];
 //	if (row[0] < minM) minM = row[0];
 	
@@ -200,6 +211,40 @@ FeatureVector LiuEtAl_v2::calculateVector()
 			result.features.push_back( 256 * qreal(colorHistogram[j][i]) / max );
 	}
 	
+	
+	/*// Dynamically rescaled histogram with 32 bins
+	for (j=0; j<3; j++) {
+		// Determine dynamic range of histogram and find sum
+		int begin=0, end=0, sum=0;
+		for (int i=0; i<256; i++) {
+			if (colorHistogram[j][i] > 0) end=i+1;
+			if (colorHistogram[j][i] > 0 && colorHistogram[j][i-1] == 0) begin=i;
+			sum += colorHistogram[j][i];
+		}
+		
+		
+		float divisor = float(32) / float(end-begin);
+		std::cout << "begin=" << begin << " end=" << end << " divisor="<<divisor<<std::endl;
+		float count = 0;
+		int cc=0;
+		for (int i=begin; i<end; i++) {
+			count += divisor;
+			if (i==0) continue;
+			colorHistogram[j][i] += colorHistogram[j][i-1];
+			while (count >= 1.0) {
+				result.features.push_back( 256 * double(colorHistogram[j][i]) / sum);
+				count -= 1.0;
+				cc++;
+			}
+		}
+		while (cc<32) {
+			result.features.push_back( 256 * double(colorHistogram[j][end-1]) / sum);
+			cc++;
+		}
+		std::cout << "added "<<cc<<std::endl;
+	}*/
+	
+	
 	// One big histogram
 /*	int max=0;
 	for (j=0; j<512; j++) {
@@ -240,12 +285,13 @@ FeatureVector LiuEtAl_v2::calculateVector()
 
 double LiuEtAl_v2::distance(FeatureVector f1, FeatureVector f2)
 {
+	int histogramSize = 256; // histogramSize = 256
 	qreal ME=0;
 	for (int k=0; k<3; k++) {
 		qreal sum=0;
 //		for (int j=0; j<4; j++)
-		for (int j=0; j<256; j++)
-			sum += pow(f1.features[k*256+j] - f2.features[k*256+j], 2);
+		for (int j=0; j<histogramSize; j++)
+			sum += pow(f1.features[k * histogramSize + j] - f2.features[k * histogramSize + j], 2);
 		ME += sqrt(sum);
 	}
 	
@@ -260,7 +306,7 @@ double LiuEtAl_v2::distance(FeatureVector f1, FeatureVector f2)
 	for (int k=0; k<3; k++) {
 		qreal sum=0;
 		for (int j=0; j<12; j++) {
-			sum += pow(f1.features[768 + k*12 + j] - f2.features[768 + k*12 + j], 2);
+			sum += pow(f1.features[3 * histogramSize + k * 12 + j] - f2.features[3 * histogramSize + k*12 + j], 2);
 		}
 		D += sqrt(sum);
 	}

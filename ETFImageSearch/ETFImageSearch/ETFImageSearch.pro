@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     qcustomplot.cpp \
     yuvhistogram.cpp \
     hsvhistogram.cpp \
-    rgbsplithistogram.cpp
+    rgbsplithistogram.cpp \
+    colorhistogram.cpp
 
 HEADERS  += mainwindow.h \
     indexer.h \
@@ -30,7 +31,8 @@ HEADERS  += mainwindow.h \
     qcustomplot.h \
     yuvhistogram.h \
     hsvhistogram.h \
-    rgbsplithistogram.h
+    rgbsplithistogram.h \
+    colorhistogram.h
 
 FORMS    += mainwindow.ui
 

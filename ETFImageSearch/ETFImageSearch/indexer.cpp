@@ -100,7 +100,7 @@ FeatureVector Indexer::getFV(QString imagePath)
 
 		/* Read all data into buffer */
 		JSAMPARRAY bugger = new JSAMPROW[cinfo.output_height];
-		for (int i=0; i<cinfo.output_height; i++)
+		for (uint i=0; i<cinfo.output_height; i++)
 			bugger[i] = new JSAMPLE[cinfo.output_width * 3];
 
 		/* Process data */
@@ -119,7 +119,7 @@ FeatureVector Indexer::getFV(QString imagePath)
 
 		fclose(input_file);
 
-		for (int i=0; i<cinfo.output_height; i++)
+		for (uint i=0; i<cinfo.output_height; i++)
 			delete[] bugger[i];
 		delete [] bugger;
 

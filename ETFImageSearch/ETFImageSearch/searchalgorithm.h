@@ -59,7 +59,7 @@ public:
 	
 private:
 	// Disable this method
-	FeatureVector extractFeatures(const uchar* imageData, int size) {}
+	FeatureVector extractFeatures(const uchar*, int) { return FeatureVector(); }
 };
 
 #endif // SEARCHALGORITHM_H

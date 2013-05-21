@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QTextBrowser>
 
+#include "colorhistogram.h"
 #include "rgbhistogram.h"
 #include "hsvhistogram.h"
 #include "yuvhistogram.h"
@@ -148,7 +149,18 @@ void MainWindow::on_prtestButton_clicked()
 		QTextBrowser* br = new QTextBrowser(0);
 		br->setHtml("<h1>Precision-Recall test</h1><p>To run Precision-Recall test on your images, all images in this folder need to be classified into categories. Each image will be searched, and all results within the same category will be considered a &quot;hit&quot;, while other results will be &quot;miss&quot;. You need to create a file named categories.txt in the format:</p><tt>filename category (category category ...)</tt><p>Category is an arbitrary case-sensitive string that will be matched. Each file can be in multiple categories.</p>");
 		br->show();
+		return;
 	}
+	
+	connect(&prtest, SIGNAL(startedPRTest(int)), this, SLOT(startedPRTest(int)));
+	connect(&prtest, SIGNAL(testingFile(QString)), this, SLOT(testingFile(QString)));
+	connect(&prtest, SIGNAL(finishedPRTest()), this, SLOT(finishedPRTest()));
+	
+	prtest.execute();
+	
+	qDebug() << "MAP ="<<prtest.AP << "AP16 ="<<prtest.AP16<<"AWP16 ="<<prtest.AWP16<<"ANMRR ="<<prtest.ANMRR;
+	
+	prtest.showGraph();
 }
 
 
@@ -184,7 +196,18 @@ void MainWindow::finishedIndexing()
 void MainWindow::rgbHistogram()
 {
 	delete currentAlgorithm;
-	currentAlgorithm = new RGBHistogram(3, 3, 3);
+	//currentAlgorithm = new RGBHistogram(3, 3, 3);
+	
+	ColorHistogram* ch = new ColorHistogram();
+	ch->setColorModel(ColorHistogram::RGB);
+	ch->setColorQuantization(8,8,8);
+	ch->setHistogramType(ColorHistogram::COMBINEDHISTOGRAM);
+	ch->setHistogramNormalization(ColorHistogram::NO_NORMALIZATION);
+	ch->setHistogramQuantization(8);
+	ch->setHistogramCumulative(false);
+	ch->setDistanceMetric(ColorHistogram::MATSUSHITA);
+	currentAlgorithm = ch;
+	
 	idx->setAlgorithm(currentAlgorithm);
 	if (idx->indexed()) {
 		ui->searchButton->setEnabled(true);
@@ -198,7 +221,18 @@ void MainWindow::rgbHistogram()
 void MainWindow::rgbSplitHistogram()
 {
 	delete currentAlgorithm;
-	currentAlgorithm = new RGBSplitHistogram(4, 4, 4);
+	//currentAlgorithm = new RGBSplitHistogram(3, 4, 4);
+	
+	ColorHistogram* ch = new ColorHistogram();
+	ch->setColorModel(ColorHistogram::YUV);
+	ch->setColorQuantization(8,16,16);
+	ch->setHistogramType(ColorHistogram::SPLITHISTOGRAM);
+	ch->setHistogramNormalization(ColorHistogram::NO_NORMALIZATION);
+	ch->setHistogramQuantization(8);
+	ch->setHistogramCumulative(false);
+	ch->setDistanceMetric(ColorHistogram::MATSUSHITA);
+	currentAlgorithm = ch;
+	
 	idx->setAlgorithm(currentAlgorithm);
 	if (idx->indexed()) {
 		ui->searchButton->setEnabled(true);
@@ -212,7 +246,18 @@ void MainWindow::rgbSplitHistogram()
 void MainWindow::hsvHistogram()
 {
 	delete currentAlgorithm;
-	currentAlgorithm = new HSVHistogram(4, 2, 2);
+	//currentAlgorithm = new HSVHistogram(4, 2, 2);
+	
+	ColorHistogram* ch = new ColorHistogram();
+	ch->setColorModel(ColorHistogram::HSV);
+	ch->setColorQuantization(16,4,4);
+	ch->setHistogramType(ColorHistogram::COMBINEDHISTOGRAM);
+	ch->setHistogramNormalization(ColorHistogram::NO_NORMALIZATION);
+	ch->setHistogramQuantization(8);
+	ch->setHistogramCumulative(false);
+	ch->setDistanceMetric(ColorHistogram::MATSUSHITA);
+	currentAlgorithm = ch;
+	
 	idx->setAlgorithm(currentAlgorithm);
 	if (idx->indexed()) {
 		ui->searchButton->setEnabled(true);
@@ -226,7 +271,18 @@ void MainWindow::hsvHistogram()
 void MainWindow::yuvHistogram()
 {
 	delete currentAlgorithm;
-	currentAlgorithm = new YUVHistogram(2,3,3);
+	//currentAlgorithm = new YUVHistogram(2,3,3);
+	
+	ColorHistogram* ch = new ColorHistogram();
+	ch->setColorModel(ColorHistogram::YUV);
+	ch->setColorQuantization(4,8,8);
+	ch->setHistogramType(ColorHistogram::COMBINEDHISTOGRAM);
+	ch->setHistogramNormalization(ColorHistogram::NO_NORMALIZATION);
+	ch->setHistogramQuantization(8);
+	ch->setHistogramCumulative(false);
+	ch->setDistanceMetric(ColorHistogram::MATSUSHITA);
+	currentAlgorithm = ch;
+	
 	idx->setAlgorithm(currentAlgorithm);
 	if (idx->indexed()) {
 		ui->searchButton->setEnabled(true);
@@ -249,4 +305,29 @@ void MainWindow::liuAlgorithm()
 		ui->searchButton->setEnabled(false);
 		ui->prtestButton->setEnabled(false);
 	}
+}
+
+
+void MainWindow::startedPRTest(int count)
+{
+	if (progressDialog) {
+		progressDialog->hide();
+		progressDialog->close();
+		progressDialog->deleteLater();
+	}
+	progressDialog = new QProgressDialog("Testing precision and recall", QString(), 0, count);
+	progressDialog->setAutoReset(false);
+	progressDialog->show();
+	time = QTime::currentTime();
+}
+
+void MainWindow::testingFile(QString fileName)
+{
+	progressDialog->setLabelText(QString("Searching file %1").arg(fileName));
+	progressDialog->setValue(progressDialog->value()+1);
+}
+
+void MainWindow::finishedPRTest()
+{
+	progressDialog->hide();
 }

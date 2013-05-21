@@ -8,9 +8,11 @@
 #include "qcustomplot.h"
 #include "liuetal_v2.h"
 
-PRTest::PRTest(QString path, SearchAlgorithm *alg, Indexer *idx) : path(path), alg(alg), idx(idx)
+PRTest::PRTest(QString path, SearchAlgorithm *alg, Indexer *idx) : AP(0), AP16(0), AWP16(0), ANMRR(0), 
+	path(path), alg(alg), idx(idx), timeElapsed(0)
 {
-	
+	PRGraph.resize(11);
+	XAxis.resize(11);
 }
 
 bool PRTest::loadCategories()
@@ -22,7 +24,6 @@ bool PRTest::loadCategories()
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return false;
 	
-	QMap<QString, QStringList> categories;
 	while (!file.atEnd()) {
 		QString line(file.readLine().trimmed());
 		QStringList parts = line.split(' ', QString::SkipEmptyParts);
@@ -32,11 +33,9 @@ bool PRTest::loadCategories()
 		categories[catFile] = parts;
 	}
 	file.close();
+	return true;
+}
 
-	QProgressDialog* progressDialog = new QProgressDialog("Testing precision and recall", QString(), 0, categories.size());
-	progressDialog->show();
-	QTime time = QTime::currentTime();
-	
 /*	QVector<double> precision(11), recall(11);
 	int searchedFiles(0);
 	
@@ -77,7 +76,7 @@ bool PRTest::loadCategories()
 			}
 		}
 		
-/*		int relevantDocs(0);
+*//*		int relevantDocs(0);
 		for (int k=0; k<10; k++) {
 			for (int j=k*16; j<(k+1)*16; j++) {
 				if (categories[results[j].fileName] == i.value()) 
@@ -95,17 +94,26 @@ bool PRTest::loadCategories()
 
 	// /home/vedran/mms/etfimagesearch/trunk/wang1000/image.orig
 	qDebug() << "MAP10 = " << precision[0];*/
+
+
+void PRTest::execute()
+{
+	emit startedPRTest(categories.size());
+	QTime time = QTime::currentTime();
 	
-	QVector<double> PRGraph(11);
-	double AP16(0), AWP16(0), ANMRR(0);
+	AP16=0; AWP16=0; ANMRR=0;
 	int counter(0);
 
 	QMapIterator<QString, QStringList> i(categories);
 	while (i.hasNext()) {
+		/*for (int k(0); k<100; k++) {
+			i.next();
+			if (!i.hasNext()) break;
+		}
+		if (!i.hasNext()) break;*/
 		i.next();
 
-		progressDialog->setLabelText(QString("Searching file %1").arg(i.key()));
-		progressDialog->setValue(progressDialog->value()+1);
+		emit testingFile(i.key());
 
 		// Create PR graph for file i
 		QVector<double> PRGraphI(11);
@@ -162,8 +170,8 @@ bool PRTest::loadCategories()
 		}
 		
 		// Update averages for PRgraph
-		for (int i(0); i<11; i++) {
-			PRGraph[i] = ( PRGraph[i]*counter + PRGraphI[i] ) / (counter+1);
+		for (int k(0); k<11; k++) {
+			PRGraph[k] = ( PRGraph[k]*counter + PRGraphI[k] ) / (counter+1);
 		}
 		
 		// Calculate ANMRR
@@ -196,27 +204,29 @@ bool PRTest::loadCategories()
 		AP16  = (  AP16 * counter + AP16k  / 16 ) / (counter+1);
 		AWP16 = ( AWP16 * counter + AWP16k / 16 ) / (counter+1);
 		ANMRR = ( ANMRR * counter + NMRR ) / (counter + 1);
+		//qDebug() << "img ="<<i.key()<<"AP16k =" << AP16k << "AP16 ="<<AP16;
 		
 		counter++;
 	}
 	
 	// AP
-	double AP=0;
+	AP=0;
 	for (int i(0); i<11; i++)
 		AP += PRGraph[i];
 	AP /= 11;
-	qDebug() << "AP = " << AP << "AP16 = "<<AP16<<" AWP16 = "<<AWP16 << " ANMRR = "<<ANMRR;
 	
-	QVector<double> XAxis(11);
 	XAxis[0] = 0;
 	for (int i(1); i<11; i++)
 		XAxis[i] = XAxis[i-1] + 0.1;
 	
-	progressDialog->hide();
-	int passed = time.msecsTo(QTime::currentTime());
-	
+	emit finishedPRTest();
+	timeElapsed = time.msecsTo(QTime::currentTime());
+}
+
+void PRTest::showGraph()
+{
 	QCustomPlot* qcp = new QCustomPlot;
-	qcp->setTitle(QString("Precision-Recall graph - %1 s").arg(qreal(passed)/1000));
+	qcp->setTitle(QString("Precision-Recall graph - %1 s").arg(double(timeElapsed)/1000));
 	qcp->addGraph();
 	qcp->graph(0)->setData(XAxis, PRGraph);
 	qcp->xAxis->setLabel("Recall");
@@ -226,8 +236,6 @@ bool PRTest::loadCategories()
 	qcp->replot();
 	
 	qcp->show();
-	
-	return true;
 }
 
 
