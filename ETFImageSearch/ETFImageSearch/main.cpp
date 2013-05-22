@@ -12,14 +12,14 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 	
-	if (a.arguments().size()>1 && a.arguments()[1] == "histogram_test") {
-		QFile input("htscript.txt");
+	if (a.arguments().size()>1 && a.arguments()[1] == "-ht") {
+		QFile input(a.arguments()[2]);
 		if (!input.open(QIODevice::ReadOnly | QIODevice::Text)) {
 			std::cerr << "File htscript.txt not found" << std::endl;
 			return -1;
 		}
 		
-		QFile output("results.txt");
+		QFile output(a.arguments()[3]);
 		if (!output.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
 			std::cerr << "Failed to open results.txt for writing" << std::endl;
 			return -2;
