@@ -326,10 +326,13 @@ double ColorHistogram::distance(FeatureVector f1, FeatureVector f2)
 	
 	case JSD:
 	{
-		int sum(0);
+		double sum(0);
 		for (int i(0); i<f1.features.size(); i++) {
-			int mi((f2.features[i] + f1.features[i]) / 2);
-			sum += f1.features[i] * log(double(f1.features[i]) / mi) + f2.features[i] * log(double(f2.features[i]) / mi);
+			double mi((f2.features[i] + f1.features[i]) / 2);
+			if (f1.features[i] > 0)
+				sum += f1.features[i] * log(double(f1.features[i]) / mi);
+			if (f2.features[i] > 0)
+				sum += f2.features[i] * log(double(f2.features[i]) / mi);
 		}
 		return sum;
 	}
@@ -373,6 +376,7 @@ double ColorHistogram::distance(FeatureVector f1, FeatureVector f2)
 			if (k==0) k=1;
 			sum += k * (f2.features[i] - f1.features[i]) * (f2.features[i] - f1.features[i]);
 		}
+		return sum;
 	}
 		
 	case K_S: // Kolmogorov-Smirnov
