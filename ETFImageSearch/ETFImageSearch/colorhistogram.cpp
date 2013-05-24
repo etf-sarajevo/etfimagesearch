@@ -135,9 +135,11 @@ void ColorHistogram::histogramNormalizeQuantize(int imageSize)
 	
 	if (histogramNormalization == NO_NORMALIZATION) {
 		// Cumulative histogram
-		if (histogramCumulative)
-			for (int i = 1; i < result.features.size(); i++)
+		if (histogramCumulative) {
+			for (int i = 1; i < result.features.size(); i++) {
 				result.features[i] += result.features[i-1];
+			}
+		}
 		
 		// Just quantize, no normalization
 		for (int i = 0; i < result.features.size(); i++)
@@ -236,7 +238,7 @@ double ColorHistogram::distance(FeatureVector f1, FeatureVector f2)
 
 	case EUCLIDEAN:
 	{
-		int sum(0);
+		double sum(0);
 		for (int i(0); i<f1.features.size(); i++) {
 			sum += (f2.features[i] - f1.features[i]) * (f2.features[i] - f1.features[i]);
 		}
@@ -370,7 +372,7 @@ double ColorHistogram::distance(FeatureVector f1, FeatureVector f2)
 		
 	case WED:
 	{
-		int sum(0);
+		double sum(0);
 		for (int i(0); i<f1.features.size(); i++) {
 			double k(f1.features[i]);
 			if (k==0) k=1;
