@@ -128,7 +128,7 @@ FeatureVector Indexer::getFV(QString imagePath)
 		
 		// If algorithm is not DCT we just read the QImage and send it to algorithm
 		QImage image(imagePath);
-		result = alg->extractFeatures(image.constBits(), image.byteCount());
+		result = alg->extractFeatures(image.bits(), image.byteCount());
 	}
 	
 	return result;
