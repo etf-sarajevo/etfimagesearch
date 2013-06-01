@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 		}
 		
 		QFile output(a.arguments()[3]);
-		if (!output.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+		if (!output.open(QIODevice::WriteOnly | QIODevice::Text)) {
 			std::cerr << "Failed to open results.txt for writing" << std::endl;
 			return -2;
 		}
@@ -80,6 +80,7 @@ int main(int argc, char *argv[])
 			prtest.execute();
 			QString result = QString("%1,%2,%3,%4,%5\n").arg(parts[0]).arg(prtest.AP).arg(prtest.AP16).arg(prtest.AWP16).arg(prtest.ANMRR);
 			output.write(result.toAscii().constData());
+			output.flush();
 		}
 		input.close();
 		output.close();
