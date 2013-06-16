@@ -33,6 +33,8 @@ FeatureVector YUVHistogram::extractFeatures(const uchar *imageData, int size)
 		U = (U+0.436)*256 / 0.872; if (U<0) U=0; if (U>255) U=255;
 		V = (V+0.615)*256 / 1.230; if (V<0) V=0; if (V>255) V=255;*/
 		
+		// The following is equivalent and comes from JPEG standard
+		
 		int R = imageData[i+2], G = imageData[i+1], B = imageData[i];
 		
 		int Y = toByte ( 0.299 * R + 0.587 * G + 0.114 * B );

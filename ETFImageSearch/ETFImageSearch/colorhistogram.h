@@ -6,7 +6,7 @@
 class ColorHistogram : public SearchAlgorithm
 {
 public:
-	enum ColorModel { RGB, YUV, HSV, HSL };
+	enum ColorModel { RGB, YUV, HSV, HSL, YIQ, XYZ, LAB, LUV };
 	enum ColorQuantizationScheme { BINARY, NORMAL, CUSTOM };
 	enum HistogramType { COMBINEDHISTOGRAM, SPLITHISTOGRAM };
 	enum HistogramNormalization { NO_NORMALIZATION, MAX_NORMALIZATION, BOTH_NORMALIZATION };

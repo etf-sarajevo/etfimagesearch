@@ -23,13 +23,37 @@ void ColorHistogram::convertColorModel(int* pixel)
 	if (colorModel == RGB) return; // Nothing to do
 	
 	int R = pixel[0], G = pixel[1], B = pixel[2];
+	double X,Y,Z; // used in several conversions
 	
 	if (colorModel == YUV) {
+		// YUV formula
+		/*double Y, U, V;
+		Y = 0.299*R + 0.587*G + 0.114*B;
+		U = 0.492*(B-Y);
+		V = 0.877*(R-Y);
+		
+		// Ranges are now Ye[0,1], Ue[-0.436,0.436], Ve[-0.615,0.615]
+		
+		// Convert to byte:
+		Y = toByte123(Y*256);
+		U = toByte123((U+0.436)*256 / (0.436*2));
+		V = toByte123((V+0.615)*256 / (0.615*2));*/
+		
+		// The following is equivalent and comes from JPEG standard
 		int Y = toByte123 ( 0.299 * R + 0.587 * G + 0.114 * B );
 		int U = toByte123 ( 128 - 0.168736 * R - 0.331264 * G + 0.5 * B );
 		int V = toByte123 ( 128 + 0.5 * R - 0.418688 * G - 0.081312 * B );
 		
 		pixel[0] = Y; pixel[1] = U; pixel[2] = V;
+		return;
+	}
+	
+	if (colorModel == YIQ) {
+		int Y = toByte123 ( 0.299 * R + 0.587 * G + 0.114 * B );
+		int I = toByte123 ( 0.596 * R - 0.275 * G - 0.321 * B );
+		int Q = toByte123 ( 0.212 * R - 0.523 * G + 0.311 * B );
+		
+		pixel[0] = Y; pixel[1] = I; pixel[2] = Q;
 		return;
 	}
 	
@@ -58,6 +82,78 @@ void ColorHistogram::convertColorModel(int* pixel)
 		
 		pixel[0] = H; pixel[1] = S; pixel[2] = L;
 		
+		return;
+	}
+
+	if (colorModel == XYZ || colorModel == LAB || colorModel == LUV) {
+		// Convert RGB to range [0,1]
+		double r(double(R)/255);
+		double g(double(G)/255);
+		double b(double(B)/255);
+		
+		// We assume that color is sRGB with decoding gamma of 2.2, as customary
+		
+		// Linearize sRGB
+		if (r<0.04045) r=r/12.92; else r=pow((r+0.055)/1.055, 2.4);
+		if (g<0.04045) g=g/12.92; else g=pow((g+0.055)/1.055, 2.4);
+		if (b<0.04045) b=b/12.92; else b=pow((b+0.055)/1.055, 2.4);
+		
+		// Convert sRGB to XYZ using transformation matrix
+		X = 0.4124564 * R + 0.3575761 * G + 0.1804375 * B;
+		Y = 0.2126729 * R + 0.7151522 * G + 0.0721750 * B;
+		Z = 0.0193339 * R + 0.1191920 * G + 0.9503041 * B;
+	}
+
+	if (colorModel == XYZ) {
+		pixel[0] = toByte123(X*255);
+		pixel[1] = toByte123(Y*255);
+		pixel[2] = toByte123(Z*255);
+		return;
+	}
+	
+	if (colorModel == LAB) {
+		// Reference illuminant D65 white point
+		double Xn = 0.95047;
+		double Yn = 1;
+		double Zn = 1.08883;
+		
+		double D = pow( 6.0 / 29.0, 3 );
+		
+		double Xfn( X / Xn ), Yfn( Y / Yn ), Zfn( Z / Zn );
+		if ( Xfn > D ) Xfn = pow(Xfn,3); else Xfn = ( 1.0 / 3.0 ) * pow( (29.0 / 6.0), 2) * Xfn + ( 4.0 / 29.0 );
+		if ( Yfn > D ) Yfn = pow(Yfn,3); else Yfn = ( 1.0 / 3.0 ) * pow( (29.0 / 6.0), 2) * Yfn + ( 4.0 / 29.0 );
+		if ( Zfn > D ) Zfn = pow(Zfn,3); else Zfn = ( 1.0 / 3.0 ) * pow( (29.0 / 6.0), 2) * Zfn + ( 4.0 / 29.0 );
+		
+		double L = 116 * Yfn - 16;
+		double a = 500 * (Xfn - Yfn);
+		double b = 200 * (Yfn - Zfn);
+		
+		// Convert to byte
+		pixel[0] = toByte123( L*255 / 100 );
+		pixel[1] = toByte123( a + 127 );
+		pixel[2] = toByte123( b + 127 );
+		return;
+	}
+	
+	if (colorModel == LUV) {
+		// Reference illuminant D65 white point
+		double Yn = 1;
+		// Reference illuminant chromaticity coordinates (from Wikipedia)
+		double un = 0.2009; double vn = 0.4610;
+		
+		double D = pow( 6.0 / 29.0, 3 );
+		
+		double Yfn( Y / Yn );
+		if ( Yfn > D ) Yfn = pow(Yfn,3); else Yfn = ( 1.0 / 3.0 ) * pow( (29.0 / 6.0), 2) * Yfn + ( 4.0 / 29.0 );
+
+		double L = 116 * Yfn - 16;
+		double u = 13 * L * ( (4*X) / (X + 15*Y + 3*Z) - un);
+		double v = 13 * L * ( (9*Y) / (X + 15*Y + 3*Z) - vn);
+		
+		// Convert to byte
+		pixel[0] = toByte123( L*255 / 100 );
+		pixel[1] = toByte123( u + 127 );
+		pixel[2] = toByte123( v + 127 );
 		return;
 	}
 }

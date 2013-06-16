@@ -199,7 +199,7 @@ void MainWindow::rgbHistogram()
 	//currentAlgorithm = new RGBHistogram(3, 3, 3);
 	
 	ColorHistogram* ch = new ColorHistogram();
-	ch->setColorModel(ColorHistogram::RGB);
+	ch->setColorModel(ColorHistogram::LUV);
 	ch->setColorQuantization(8,8,8);
 	ch->setHistogramType(ColorHistogram::COMBINEDHISTOGRAM);
 	ch->setHistogramNormalization(ColorHistogram::NO_NORMALIZATION);
