@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
 
 			if (parts[1]=="RGB") alg.setColorModel(ColorHistogram::RGB);
 			if (parts[1]=="YUV") alg.setColorModel(ColorHistogram::YUV);
+			if (parts[1]=="YIQ") alg.setColorModel(ColorHistogram::YIQ);
 			if (parts[1]=="HSV") alg.setColorModel(ColorHistogram::HSV);
 			if (parts[1]=="HSL") alg.setColorModel(ColorHistogram::HSL);
 			if (parts[1]=="LAB") alg.setColorModel(ColorHistogram::LAB);
