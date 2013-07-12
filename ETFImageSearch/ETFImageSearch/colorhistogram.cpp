@@ -309,6 +309,7 @@ void ColorHistogram::resizeFeatureVector()
 	}
 	
 	result.features.resize( bins );
+	result.features.fill( 0 , bins );
 }
 
 FeatureVector ColorHistogram::extractFeatures(const uchar *imageData, int size)
@@ -330,11 +331,22 @@ FeatureVector ColorHistogram::extractFeatures(const uchar *imageData, int size)
 		incrementHistogram(pixel);
 	}
 	
+	/*QString output;
+	for (int i = 0; i < result.features.size(); i++) {
+		output += QString("%1 ").arg(result.features[i]);
+	}
+	qDebug()<<"Image histogram:"<<output;*/
+	
 	histogramNormalizeQuantize(size/4);
+	
+	/*output = "";
+	for (int i = 0; i < result.features.size(); i++) {
+		output += QString("%1 ").arg(result.features[i]);
+	}
+	qDebug()<<"After normalization:"<<output;*/
 	
 	return result;
 }
-
 
 
 double ColorHistogram::distance(FeatureVector f1, FeatureVector f2)
