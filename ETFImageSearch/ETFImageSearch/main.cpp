@@ -5,7 +5,7 @@
 #include <QDebug>
 
 #include "colorhistogram.h"
-#include "indexer.h"
+#include "sequentialindexer.h"
 #include "prtest.h"
 
 int main(int argc, char *argv[])
@@ -29,13 +29,7 @@ int main(int argc, char *argv[])
 			QStringList parts = QString(input.readLine()).split(',');
 			ColorHistogram alg;
 
-			if (parts[1]=="RGB") alg.setColorModel(ColorHistogram::RGB);
-			if (parts[1]=="YUV") alg.setColorModel(ColorHistogram::YUV);
-			if (parts[1]=="YIQ") alg.setColorModel(ColorHistogram::YIQ);
-			if (parts[1]=="HSV") alg.setColorModel(ColorHistogram::HSV);
-			if (parts[1]=="HSL") alg.setColorModel(ColorHistogram::HSL);
-			if (parts[1]=="LAB") alg.setColorModel(ColorHistogram::LAB);
-			if (parts[1]=="LUV") alg.setColorModel(ColorHistogram::LUV);
+			alg.setColorModel(Pixel::fromString(parts[1]));
 			
 			alg.setColorQuantization(parts[2].toInt(), parts[3].toInt(), parts[4].toInt());
 			
@@ -50,29 +44,11 @@ int main(int argc, char *argv[])
 			
 			if (parts[8].toInt() == 1) alg.setHistogramCumulative(true); else alg.setHistogramCumulative(false);
 			
-			enum DistanceMetric { EUCLIDEAN, MATSUSHITA, BRAY_CURTIS, MANHATTAN, SOERGEL, BHATTACHARYA, CHI_SQUARE, CANBERRA, HIST_INT, JSD, ANGULAR, CHORD, WAVE_HEDGES, WED, K_S, KUIPER, MEAN };
-			
-			if (parts[9]=="EUCLIDEAN") alg.setDistanceMetric(ColorHistogram::EUCLIDEAN);
-			if (parts[9]=="MATSUSHITA") alg.setDistanceMetric(ColorHistogram::MATSUSHITA);
-			if (parts[9]=="BRAY_CURTIS") alg.setDistanceMetric(ColorHistogram::BRAY_CURTIS);
-			if (parts[9]=="MANHATTAN") alg.setDistanceMetric(ColorHistogram::MANHATTAN);
-			if (parts[9]=="SOERGEL") alg.setDistanceMetric(ColorHistogram::SOERGEL);
-			if (parts[9]=="BHATTACHARYA") alg.setDistanceMetric(ColorHistogram::BHATTACHARYA);
-			if (parts[9]=="CHI_SQUARE") alg.setDistanceMetric(ColorHistogram::CHI_SQUARE);
-			if (parts[9]=="CANBERRA") alg.setDistanceMetric(ColorHistogram::CANBERRA);
-			if (parts[9]=="HIST_INT") alg.setDistanceMetric(ColorHistogram::HIST_INT);
-			if (parts[9]=="JSD") alg.setDistanceMetric(ColorHistogram::JSD);
-			if (parts[9]=="ANGULAR") alg.setDistanceMetric(ColorHistogram::ANGULAR);
-			if (parts[9]=="CHORD") alg.setDistanceMetric(ColorHistogram::CHORD);
-			if (parts[9]=="WAVE_HEDGES") alg.setDistanceMetric(ColorHistogram::WAVE_HEDGES);
-			if (parts[9]=="WED") alg.setDistanceMetric(ColorHistogram::WED);
-			if (parts[9]=="K_S") alg.setDistanceMetric(ColorHistogram::K_S);
-			if (parts[9]=="KUIPER") alg.setDistanceMetric(ColorHistogram::KUIPER);
-			if (parts[9]=="MEAN") alg.setDistanceMetric(ColorHistogram::MEAN);
+			alg.setDistanceMetric(DistanceMetric::fromString(parts[9]));
 			
 			qDebug() << "Indexing"<<parts[0]<<"...";
-			Indexer idx(&alg, parts[10]);
-			idx.createIndex();
+			SequentialIndexer idx(&alg, parts[10]);
+			idx.buildIndex();
 			
 			qDebug() << "PR test"<<parts[0]<<"...";
 			PRTest prtest(parts[10], &alg, &idx);
