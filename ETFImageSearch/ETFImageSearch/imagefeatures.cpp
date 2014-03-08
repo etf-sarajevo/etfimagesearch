@@ -4,6 +4,7 @@
 #include "luetal_v2.h"
 #include "cedd.h"
 #include "hmmdquant.h"
+#include "zhangetal.h"
 
 #include <QDebug>
 
@@ -27,6 +28,8 @@ ImageFeatures* ImageFeatures::factory(QString name)
 		return new LuEtAl_v2();
 	if (name == HMMDquant::static_name())
 		return new HMMDquant();
+	if (name == ZhangEtAl::static_name())
+		return new ZhangEtAl();
 }
 
 void ImageFeatures::vectorDump(QVector<double> vector) {
