@@ -1,6 +1,7 @@
 #include "indexer.h"
 #include "globals.h"
 
+#include "annindexer.h"
 #include "lshindexer.h"
 #include "treeindexer.h"
 #include "sequentialindexer.h"
@@ -339,6 +340,8 @@ Indexer* Indexer::factory(QString name, ImageFeatures* alg, QString path)
 	Indexer* indexer;
 	if (name == SequentialIndexer::static_name())
 		indexer = new SequentialIndexer(alg, path);
+	if (name == ANNIndexer::static_name())
+		indexer = new ANNIndexer(alg, path);
 	if (name == LSHIndexer::static_name())
 		indexer = new LSHIndexer(alg, path);
 	if (name == TreeIndexer::static_name())
