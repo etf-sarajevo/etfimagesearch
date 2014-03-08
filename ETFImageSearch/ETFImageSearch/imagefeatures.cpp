@@ -1,5 +1,6 @@
 #include "imagefeatures.h"
 #include "colorhistogram.h"
+#include "hsl10bin.h"
 #include "luetal_v2.h"
 #include "cedd.h"
 #include "hmmdquant.h"
@@ -18,6 +19,8 @@ ImageFeatures* ImageFeatures::factory(QString name)
 {
 	if (name == ColorHistogram::static_name())
 		return new ColorHistogram();
+	if (name == HSL10bin::static_name())
+		return new HSL10bin();
 	if (name == CEDD::static_name())
 		return new CEDD();
 	if (name == LuEtAl_v2::static_name())
