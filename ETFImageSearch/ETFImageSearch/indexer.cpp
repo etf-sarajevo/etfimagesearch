@@ -1,10 +1,13 @@
 #include "indexer.h"
 #include "globals.h"
 
-#include "annindexer.h"
 #include "lshindexer.h"
 #include "treeindexer.h"
 #include "sequentialindexer.h"
+
+#ifdef LIB_ANN
+#include "annindexer.h"
+#endif
 
 #include <QDir>
 #include <QFileInfo>
@@ -340,8 +343,10 @@ Indexer* Indexer::factory(QString name, ImageFeatures* alg, QString path)
 	Indexer* indexer;
 	if (name == SequentialIndexer::static_name())
 		indexer = new SequentialIndexer(alg, path);
+#ifdef LIB_ANN
 	if (name == ANNIndexer::static_name())
 		indexer = new ANNIndexer(alg, path);
+#endif
 	if (name == LSHIndexer::static_name())
 		indexer = new LSHIndexer(alg, path);
 	if (name == TreeIndexer::static_name())

@@ -6,6 +6,9 @@
 
 QT       += core gui
 
+# Uncomment this to enable ANN indexer
+CONFIG += ann
+
 TARGET = ETFImageSearch
 TEMPLATE = app
 
@@ -15,11 +18,9 @@ SOURCES += main.cpp\
     prtest.cpp \
     qcustomplot.cpp \
     colorhistogram.cpp \
-    luetal_v3.cpp \
     hsl10bin.cpp \
     treeindexer.cpp \
     lshindexer.cpp \
-    annindexer.cpp \
     imagefeatures.cpp \
     distancemetric.cpp \
     sequentialindexer.cpp \
@@ -35,11 +36,9 @@ HEADERS  += mainwindow.h \
     prtest.h \
     qcustomplot.h \
     colorhistogram.h \
-    luetal_v3.h \
     hsl10bin.h \
     treeindexer.h \
     lshindexer.h \
-    annindexer.h \
     imagefeatures.h \
     distancemetric.h \
     featurevector.h \
@@ -60,7 +59,10 @@ INCLUDEPATH += ../libjpeg-hacked
 ann {
 	SOURCES += annindexer.cpp
 	HEADERS  += annindexer.h
-	LIBS += -lann # On some platforms: -lANN
+	LIBS += -lann 
+	# On some platforms use this:
+	#LIBS += -lANN
+	DEFINES += LIB_ANN
 }
 
 win* {
