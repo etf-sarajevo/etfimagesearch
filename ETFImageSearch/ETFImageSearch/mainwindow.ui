@@ -14,16 +14,16 @@
    <string>ETFImageSearch</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
-     <widget class="QFrame" name="frame">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
+     <widget class="QWidget" name="widget" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QPushButton" name="indexButton">
          <property name="text">
@@ -52,27 +52,17 @@
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
+        <widget class="QLineEdit" name="lineEdit"/>
        </item>
       </layout>
      </widget>
     </item>
     <item>
-     <widget class="QWidget" name="widget" native="true">
+     <widget class="QWidget" name="widget1" native="true">
       <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QLineEdit" name="lineEdit"/>
-       </item>
+       <property name="margin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QTreeView" name="treeView"/>
        </item>
@@ -87,15 +77,25 @@
      <x>0</x>
      <y>0</y>
      <width>659</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAlgorithm">
     <property name="title">
-     <string>Algorithm</string>
+     <string>Indexes</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuActions">
+    <property name="title">
+     <string>Actions</string>
+    </property>
+    <addaction name="actionCreate_index"/>
+    <addaction name="actionSearch_image"/>
+    <addaction name="actionPR_test"/>
+    <addaction name="actionOptimize"/>
+   </widget>
    <addaction name="menuAlgorithm"/>
+   <addaction name="menuActions"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -109,6 +109,26 @@
   <action name="actionRGB_Histogram">
    <property name="text">
     <string>RGB Histogram</string>
+   </property>
+  </action>
+  <action name="actionCreate_index">
+   <property name="text">
+    <string>Create index</string>
+   </property>
+  </action>
+  <action name="actionSearch_image">
+   <property name="text">
+    <string>Search image</string>
+   </property>
+  </action>
+  <action name="actionPR_test">
+   <property name="text">
+    <string>PR test</string>
+   </property>
+  </action>
+  <action name="actionOptimize">
+   <property name="text">
+    <string>Optimize</string>
    </property>
   </action>
  </widget>
