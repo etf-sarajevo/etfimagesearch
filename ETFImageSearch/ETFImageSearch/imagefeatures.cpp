@@ -2,6 +2,7 @@
 #include "colorhistogram.h"
 #include "luetal_v2.h"
 #include "cedd.h"
+#include "hmmdquant.h"
 
 #include <QDebug>
 
@@ -21,6 +22,8 @@ ImageFeatures* ImageFeatures::factory(QString name)
 		return new CEDD();
 	if (name == LuEtAl_v2::static_name())
 		return new LuEtAl_v2();
+	if (name == HMMDquant::static_name())
+		return new HMMDquant();
 }
 
 void ImageFeatures::vectorDump(QVector<double> vector) {
