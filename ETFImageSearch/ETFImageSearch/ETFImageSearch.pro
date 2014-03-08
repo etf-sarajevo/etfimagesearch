@@ -12,31 +12,56 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     indexer.cpp \
-    searchalgorithm.cpp \
-    rgbhistogram.cpp \
-    liuetal_v2.cpp \
     prtest.cpp \
     qcustomplot.cpp \
-    yuvhistogram.cpp \
-    hsvhistogram.cpp \
-    rgbsplithistogram.cpp \
-    colorhistogram.cpp
+    colorhistogram.cpp \
+    luetal_v3.cpp \
+    hsl10bin.cpp \
+    treeindexer.cpp \
+    lshindexer.cpp \
+    annindexer.cpp \
+    imagefeatures.cpp \
+    distancemetric.cpp \
+    sequentialindexer.cpp \
+    luetal_v2.cpp \
+    newindexdialog.cpp \
+    cedd.cpp \
+    zhangetal.cpp \
+    hmmdquant.cpp \
+    pixel.cpp
 
 HEADERS  += mainwindow.h \
     indexer.h \
-    searchalgorithm.h \
-    rgbhistogram.h \
-    liuetal_v2.h \
     prtest.h \
     qcustomplot.h \
-    yuvhistogram.h \
-    hsvhistogram.h \
-    rgbsplithistogram.h \
-    colorhistogram.h
+    colorhistogram.h \
+    luetal_v3.h \
+    hsl10bin.h \
+    treeindexer.h \
+    lshindexer.h \
+    annindexer.h \
+    imagefeatures.h \
+    distancemetric.h \
+    featurevector.h \
+    sequentialindexer.h \
+    globals.h \
+    luetal_v2.h \
+    newindexdialog.h \
+    cedd.h \
+    zhangetal.h \
+    hmmdquant.h \
+    pixel.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    newindexdialog.ui
 
 INCLUDEPATH += ../libjpeg-hacked
+
+ann {
+	SOURCES += annindexer.cpp
+	HEADERS  += annindexer.h
+	LIBS += -lann # On some platforms: -lANN
+}
 
 win* {
     LIBS += $$PWD/../libjpeg-hacked/libjpeg.a
