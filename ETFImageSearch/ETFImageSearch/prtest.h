@@ -7,7 +7,7 @@
 #include <QObject>
 #include <QMap>
 
-#include "searchalgorithm.h"
+#include "imagefeatures.h"
 #include "indexer.h"
 
 class PRTest : public QObject
@@ -15,14 +15,14 @@ class PRTest : public QObject
 	Q_OBJECT
 	
 public:
-	PRTest(QString path, SearchAlgorithm* alg, Indexer* idx);
+	PRTest(QString path, ImageFeatures* alg, Indexer* idx);
 	
 	bool loadCategories();
 	void execute();
-	bool optimize();
+	bool optimize(QStringList variables);
 	void showGraph();
 	
-	double AP, AP16, AWP16, ANMRR;
+	double AP, AP16, AWP16, ANMRR, MAP;
 	
 signals:
 	void startedPRTest(int count);
@@ -31,7 +31,7 @@ signals:
 
 private:
 	QString path;
-	SearchAlgorithm* alg;
+	ImageFeatures* alg;
 	Indexer* idx;
 	QMap<QString, QStringList> categories;
 	QVector<double> PRGraph, XAxis;

@@ -35,6 +35,7 @@ bool PRTest::loadCategories()
 		categories[catFile] = parts;
 	}
 	file.close();
+	//qDebug() << "CATAGOREES: "<<i;
 	return true;
 }
 
@@ -402,6 +403,53 @@ bool PRTest::optimize(QStringList variables)
 			if (i == vars.size()-1) done=true;
 		}
 	}
+	
+/*	int k(0);
+	for (double kME=0.05; kME<0.15; kME += 0.005) {
+		LuEtAl_v2* liu = (LuEtAl_v2*) alg;
+		liu->setkMEkD(kME, 1-kME);
+
+		progressDialog->setLabelText(QString("Pass %1").arg(k+1));
+		progressDialog->setValue(progressDialog->value()+1);
+		
+		QMapIterator<QString, QString> i(categories);
+		while (i.hasNext()) {
+			i.next();
+		
+		
+			QVector<Indexer::Result> results = idx->search(path + QDir::separator() + i.key());
+			int relevantDocs(0);
+			for (int j=0; j<16; j++) {
+				if (categories[results[j].fileName] == i.value()) 
+					relevantDocs++;
+			}
+			precision[k] += qreal(relevantDocs) / 16;
+			//recall[k] += qreal(relevantDocs) / 100;
+			recall[k] = kME;
+		}
+		k++;
+	}*/
+	
+	/*for (int i=0; i<20; i++) {
+		precision[i] /= categories.size();
+//		recall[i] /= categories.size();
+	}
+
+	// /home/vedran/mms/etfimagesearch/trunk/wang1000/image.orig
+	progressDialog->hide();
+	int passed = time.msecsTo(QTime::currentTime());
+	
+	QCustomPlot* qcp = new QCustomPlot;
+	qcp->setTitle(QString("Precision-Recall graph - %1 s").arg(qreal(passed)/1000));
+	qcp->addGraph();
+	qcp->graph(0)->setData(recall, precision);
+	qcp->xAxis->setLabel("Recall");
+	qcp->yAxis->setLabel("Precision");
+	qcp->xAxis->setRange(0.05, 0.15);
+	qcp->yAxis->setRange(0.3, 0.8);
+	qcp->replot();
+	
+	qcp->show();*/
 	
 	return true;
 }
