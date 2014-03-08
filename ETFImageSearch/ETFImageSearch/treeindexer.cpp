@@ -11,6 +11,7 @@
 #include <QTime>
 
 #include <cmath>
+#include <algorithm>
 
 TreeIndexer::TreeIndexer(ImageFeatures *alg, QString path) : Indexer(alg, path)
 {
@@ -283,7 +284,7 @@ QVector<Indexer::Result> TreeIndexer::search(QString filePath, int nrResults)
 	resultsJoined.reserve( results.size() + resultsAA.size() );
 	resultsJoined.insert( resultsJoined.end(), results.begin(), results.end() );
 	resultsJoined.insert( resultsJoined.end(), resultsAA.begin(), resultsAA.end() );
-	sort(resultsJoined.begin(), resultsJoined.end(), Indexer::resultLessThen);
+	std::sort(resultsJoined.begin(), resultsJoined.end(), Indexer::resultLessThen);
 	resultsJoined.erase( unique( resultsJoined.begin(), resultsJoined.end() ), resultsJoined.end() );
 
 	QVector<Indexer::Result> vec = QVector<Indexer::Result>::fromStdVector(resultsJoined);
@@ -338,7 +339,7 @@ void TreeIndexer::searchRecursive(QVector<QVector<TreeNode> > &tree, int nodeInd
 	// Sort vector by scaled distance.
 	// Note that this doesn't guarantee that the ordering of higher resolution results will be the same. So the results vector must
 	// be sorted again in search() function.
-	sort(subTreeResults.begin(), subTreeResults.end(), subTreeResultLessThen);
+	std::sort(subTreeResults.begin(), subTreeResults.end(), subTreeResultLessThen);
 	
 	for (int i(0); i<subTreeResults.size(); i++) {
 		// Alias for shorter typing
