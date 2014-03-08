@@ -4,168 +4,136 @@
 #include <QColor>
 #include <cmath>
 
-ColorHistogram::ColorHistogram() : SearchAlgorithm(),
-	colorModel(RGB), componentCount(3), cqScheme(BINARY), histogramType(COMBINEDHISTOGRAM)
+ColorHistogram::ColorHistogram() : ImageFeatures(),
+	colorModel(Pixel::RGB), componentCount(3), cqScheme(BINARY), histogramType(COMBINEDHISTOGRAM), histogramQuantization(8), distanceMetric(DistanceMetric::MANHATTAN)
 {
 	colorQuantization[0]=colorQuantization[1]=colorQuantization[2]=3;
 	colorQuantization[3]=0;
 }
 
-int toByte123(int x) 
+int ColorHistogram::size()
 {
-	if (x<0) x=0;
-	if (x>255) x=255;
-	return x;
+	int bins(0);
+	if (histogramType == COMBINEDHISTOGRAM) {
+		bins=1;
+		for (int i(0); i<componentCount; i++) {
+			if (colorQuantization[i] == 0) continue;
+			if (cqScheme == BINARY)
+				bins *= pow(2, colorQuantization[i]);
+			else
+				bins *= colorQuantization[i];
+		}
+		
+	} else if (histogramType == SPLITHISTOGRAM) {
+		for (int i(0); i<componentCount; i++)
+			if (cqScheme == BINARY)
+				bins += pow(2, colorQuantization[i]);
+			else
+				bins += colorQuantization[i];
+	}
+	return bins;
 }
 
-void ColorHistogram::convertColorModel(int* pixel) 
+ImageFeatures::DataType ColorHistogram::dataType()
 {
-	if (colorModel == RGB) return; // Nothing to do
-	
-	int R = pixel[0], G = pixel[1], B = pixel[2];
-	double X,Y,Z; // used in several conversions
-	
-	if (colorModel == YUV) {
-		// YUV formula
-		/*double Y, U, V;
-		Y = 0.299*R + 0.587*G + 0.114*B;
-		U = 0.492*(B-Y);
-		V = 0.877*(R-Y);
-		
-		// Ranges are now Ye[0,1], Ue[-0.436,0.436], Ve[-0.615,0.615]
-		
-		// Convert to byte:
-		Y = toByte123(Y*256);
-		U = toByte123((U+0.436)*256 / (0.436*2));
-		V = toByte123((V+0.615)*256 / (0.615*2));*/
-		
-		// The following is equivalent and comes from JPEG standard
-		int Y = toByte123 ( 0.299 * R + 0.587 * G + 0.114 * B );
-		int U = toByte123 ( 128 - 0.168736 * R - 0.331264 * G + 0.5 * B );
-		int V = toByte123 ( 128 + 0.5 * R - 0.418688 * G - 0.081312 * B );
-		
-		pixel[0] = Y; pixel[1] = U; pixel[2] = V;
-		return;
-	}
-	
-	if (colorModel == YIQ) {
-		int Y = toByte123 ( 0.299 * R + 0.587 * G + 0.114 * B );
-		int I = toByte123 ( (152 + 0.596 * R - 0.275 * G - 0.321 * B) / 304 * 255 );
-		int Q = toByte123 ( (133 + 0.212 * R - 0.523 * G + 0.311 * B) / 266 * 255 );
-		
-		pixel[0] = Y; pixel[1] = I; pixel[2] = Q;
-		
-		return;
-	}
-	
-	if (colorModel == HSV) {
-		int H, S, V;
-		
-		QColor color(R, G, B);
-		color.getHsv(&H, &S, &V);
-		
-		H = (H*256)/360; // Rescale to 0-255
-		if (H==256) H=255;
-		
-		pixel[0] = H; pixel[1] = S; pixel[2] = V;
-		
-		return;
-	}
-	
-	if (colorModel == HSL) {
-		int H, S, L;
-		
-		QColor color(R, G, B);
-		color.getHsl(&H, &S, &L);
-		
-		H = (H*256)/360; // Rescale to 0-255
-		if (H==256) H=255;
-		
-		pixel[0] = H; pixel[1] = S; pixel[2] = L;
-		
-		return;
-	}
-
-	if (colorModel == XYZ || colorModel == LAB || colorModel == LUV) {
-		// Convert RGB to range [0,1]
-		double r(double(R)/255);
-		double g(double(G)/255);
-		double b(double(B)/255);
-		
-		// We assume that color is sRGB with decoding gamma of 2.2, as customary
-		
-		// Linearize sRGB
-		if (r<0.04045) r=r/12.92; else r=pow((r+0.055)/1.055, 2.4);
-		if (g<0.04045) g=g/12.92; else g=pow((g+0.055)/1.055, 2.4);
-		if (b<0.04045) b=b/12.92; else b=pow((b+0.055)/1.055, 2.4);
-		
-		// Convert sRGB to XYZ using transformation matrix
-		X = 0.4124564 * r + 0.3575761 * g + 0.1804375 * b;
-		Y = 0.2126729 * r + 0.7151522 * g + 0.0721750 * b;
-		Z = 0.0193339 * r + 0.1191920 * g + 0.9503041 * b;
-	}
-
-	if (colorModel == XYZ) {
-		pixel[0] = toByte123(X*255);
-		pixel[1] = toByte123(Y*255);
-		pixel[2] = toByte123(Z*255);
-		return;
-	}
-	
-	if (colorModel == LAB) {
-		// Reference illuminant D65 white point
-		double Xn = 0.95047;
-		double Yn = 1;
-		double Zn = 1.08883;
-		
-		double D = pow( 6.0 / 29.0, 3 );
-		
-		double Xfn( X / Xn ), Yfn( Y / Yn ), Zfn( Z / Zn );
-		if ( Xfn > D ) Xfn = pow(Xfn,1.0/3.0); else Xfn = ( 1.0 / 3.0 ) * pow( (29.0 / 6.0), 2) * Xfn + ( 4.0 / 29.0 );
-		if ( Yfn > D ) Yfn = pow(Yfn,1.0/3.0); else Yfn = ( 1.0 / 3.0 ) * pow( (29.0 / 6.0), 2) * Yfn + ( 4.0 / 29.0 );
-		if ( Zfn > D ) Zfn = pow(Zfn,1.0/3.0); else Zfn = ( 1.0 / 3.0 ) * pow( (29.0 / 6.0), 2) * Zfn + ( 4.0 / 29.0 );
-		
-		double L = 116 * Yfn - 16;
-		double a = 500 * (Xfn - Yfn);
-		double b = 200 * (Yfn - Zfn);
-		
-		// Convert to byte
-		pixel[0] = toByte123( L*255 / 100 );
-		pixel[1] = toByte123( a + 127 );
-		pixel[2] = toByte123( b + 127 );
-		
-		return;
-	}
-	
-	if (colorModel == LUV) {
-		// Reference illuminant D65 white point
-		double Xn = 0.95047;
-		double Yn = 1;
-		double Zn = 1.08883;
-		
-		double D = pow( 6.0 / 29.0, 3 );
-		
-		double Yfn( Y / Yn );
-		if ( Yfn > D ) Yfn = pow(Yfn,1.0/3.0); else Yfn = ( 1.0 / 3.0 ) * pow( (29.0 / 6.0), 2) * Yfn + ( 4.0 / 29.0 );
-		
-		double Xfn((4*X) / (X + 15*Y + 3*Z));
-		double Zfn((9*Y) / (X + 15*Y + 3*Z));
-		
-		double Xref((4*Xn) / (Xn + 15*Yn + 3*Zn));
-		double Zref((9*Yn) / (Xn + 15*Yn + 3*Zn));
-
-		double L = 116 * Yfn - 16;
-		double u = 13 * L * ( Xfn - Xref );
-		double v = 13 * L * ( Zfn - Zref );
-		
-		// Convert to byte
-		pixel[0] = toByte123( L*255 / 100 );
-		pixel[1] = toByte123( u + 127 );
-		pixel[2] = toByte123( v + 127 );
-		
-		return;
-	}
+	if (histogramQuantization<=8)
+		return ImageFeatures::UINT8;
+	if (histogramQuantization<=16)
+		return ImageFeatures::UINT16;
+	if (histogramQuantization<32)
+		return ImageFeatures::UINT32;
+	if (histogramQuantization==32)
+		return ImageFeatures::FLOAT32;
+	return ImageFeatures::DOUBLE64;
 }
+
+
+void ColorHistogram::setParams(QString params)
+{
+	QStringList paramsList = params.split(';');
+
+	// paramsList[0] = color model
+	setColorModel(Pixel::fromString(paramsList[0]));
+	
+	// paramsList[1] = color quantization
+	QStringList quantizations = paramsList[1].split(',');
+	if (quantizations.size() == 4)
+		setColorQuantization(quantizations[0].toInt(), quantizations[1].toInt(), quantizations[2].toInt(), quantizations[3].toInt());
+	else if (quantizations.size() == 3)
+		setColorQuantization(quantizations[0].toInt(), quantizations[1].toInt(), quantizations[2].toInt());
+	
+	// paramsList[2] = histogram type
+	if (paramsList[2] == "COMBINED")
+		setHistogramType(COMBINEDHISTOGRAM);
+	else if (paramsList[2] == "SPLIT")
+		setHistogramType(SPLITHISTOGRAM);
+	
+	// paramsList[3] = histogram normalization
+	if (paramsList[3] == "NO_NORMALIZATION")
+		setHistogramNormalization(NO_NORMALIZATION);
+	else if (paramsList[3] == "MAX_NORMALIZATION")
+		setHistogramNormalization(MAX_NORMALIZATION);
+	else if (paramsList[3] == "BOTH_NORMALIZATION")
+		setHistogramNormalization(BOTH_NORMALIZATION);
+	
+	// paramsList[4] = histogram quantization
+	setHistogramQuantization(paramsList[4].toInt());
+	
+	// paramsList[5] = cumulative?
+	if (paramsList[5] == "CUMULATIVE")
+		setHistogramCumulative(true);
+	else
+		setHistogramCumulative(false);
+	
+	// paramsList[6] = distance metric
+	setDistanceMetric(DistanceMetric::fromString(paramsList[6]));
+}
+
+QString ColorHistogram::getParams()
+{
+	QStringList paramsList;
+	
+	// paramsList[0] = color model
+	paramsList.append(Pixel::toString(colorModel));
+	
+	// paramsList[1] = color quantization
+	QString quantizations;
+	if (colorQuantization[3] > 0)
+		quantizations = QString("%1,%2,%3,%4").arg(colorQuantization[0]).arg(colorQuantization[1]).arg(colorQuantization[2]).arg(colorQuantization[3]);
+	else
+		quantizations = QString("%1,%2,%3").arg(colorQuantization[0]).arg(colorQuantization[1]).arg(colorQuantization[2]);
+	paramsList.append(quantizations);
+	
+	// paramsList[2] = histogram type
+	if (histogramType == COMBINEDHISTOGRAM)
+		paramsList.append("COMBINED");
+	else if (histogramType == SPLITHISTOGRAM)
+		paramsList.append("SPLIT");
+	
+	// paramsList[3] = histogram normalization
+	if (histogramNormalization == NO_NORMALIZATION)
+		paramsList.append("NO_NORMALIZATION");
+	else if (histogramNormalization == MAX_NORMALIZATION)
+		paramsList.append("MAX_NORMALIZATION");
+	else if (histogramNormalization == BOTH_NORMALIZATION)
+		paramsList.append("BOTH_NORMALIZATION");
+	
+	// paramsList[4] = histogram quantization
+	paramsList.append(QString("%1").arg(histogramQuantization));
+	
+	// paramsList[5] = cumulative?
+	if (histogramCumulative)
+		paramsList.append("CUMULATIVE");
+	else 
+		paramsList.append("NOT_CUMULATIVE");
+	
+	// paramsList[6] = distance metric
+	paramsList.append(DistanceMetric::toString(distanceMetric));
+	
+	return paramsList.join(QString(';'));
+}
+
+
 
 void ColorHistogram::setColorQuantization(int cq0, int cq1, int cq2, int cq3) 
 {
@@ -183,28 +151,28 @@ void ColorHistogram::setColorQuantization(int cq0, int cq1, int cq2, int cq3)
 	}
 }
 
-void ColorHistogram::colorQuantize(int* pixel) 
+void ColorHistogram::colorQuantize(Pixel &p) 
 {
 	for (int i(0); i<componentCount; i++)
-		if (colorQuantization[i]==0) pixel[i]=0;
+		if (colorQuantization[i]==0) p.c[i]=0;
 		else {
 			if (cqScheme==BINARY)
-				pixel[i] = pixel[i] >> (8 - colorQuantization[i]);
+				p.c[i] = p.c[i] >> (8 - colorQuantization[i]);
 			else if (cqScheme == NORMAL) {
-				pixel[i] = (pixel[i] * colorQuantization[i]) / 256;
-				if (pixel[i] >= colorQuantization[i]) pixel[i]=colorQuantization[i]-1;
+				p.c[i] = (p.c[i] * colorQuantization[i]) / 256;
+				if (p.c[i] >= colorQuantization[i]) p.c[i]=colorQuantization[i]-1;
 			}
 		}
 }
 
-void ColorHistogram::incrementHistogram(int *pixel)
+void ColorHistogram::incrementHistogram(const Pixel &p)
 {
 	if (histogramType == COMBINEDHISTOGRAM) {
 		uint index=0;
 		for (int i(0); i<componentCount; i++) {
 			if (colorQuantization[i] == 0) continue;
 			
-			index += pixel[i];
+			index += p.c[i];
 			
 			if (i < componentCount-1) {
 				if (cqScheme == BINARY)
@@ -213,14 +181,14 @@ void ColorHistogram::incrementHistogram(int *pixel)
 					index = index * colorQuantization[i+1];
 			}
 		}
-		result.features[index]++;
+		result[index]++;
 		
 	} else if (histogramType == SPLITHISTOGRAM) {
 		uint offset=0;
 		for (int i(0); i<componentCount; i++) {
 			if (colorQuantization[i] == 0) continue;
 			
-			result.features[offset + pixel[i]]++;
+			result[offset + p.c[i]]++;
 			
 			if (i < componentCount-1) {
 				if (cqScheme == BINARY)
@@ -241,107 +209,98 @@ void ColorHistogram::histogramNormalizeQuantize(int imageSize)
 	if (histogramNormalization == NO_NORMALIZATION) {
 		// Cumulative histogram
 		if (histogramCumulative) {
-			for (int i = 1; i < result.features.size(); i++) {
-				result.features[i] += result.features[i-1];
+			for (int i = 1; i < result.size(); i++) {
+				result[i] += result[i-1];
 			}
 		}
 		
 		// Just quantize, no normalization
-		for (int i = 0; i < result.features.size(); i++)
-			result.features[i] = int ( (result.features[i] / imageSize ) * factor );
+		for (int i = 0; i < result.size(); i++)
+			if (histogramQuantization < 32)
+				result[i] = uint ( (result[i] / imageSize ) * factor );
+			else
+				result[i] = result[i] / imageSize;
 	}
 	
 	else if (histogramNormalization == MAX_NORMALIZATION) {
 		// Cumulative histogram and find maximum
 		qreal max(0);
-		for (int i(0); i<result.features.size(); i++) {
+		for (int i(0); i<result.size(); i++) {
 			if (histogramCumulative && i>0)
-				result.features[i] += result.features[i-1];
-			if (result.features[i] > max)
-				max = result.features[i];
+				result[i] += result[i-1];
+			if (result[i] > max)
+				max = result[i];
 		}
 		
 		// Normalize and quantize
-		for (int i(0); i<result.features.size(); i++) {
-			qreal x = qreal(result.features[i]) / max;
-			result.features[i] = x*factor;
+		for (int i(0); i<result.size(); i++) {
+			qreal x = qreal(result[i]) / max;
+			if (histogramQuantization < 32)
+				result[i] = uint ( x * factor );
+			else
+				result[i] = x;
 		}
 	}
 	else if (histogramNormalization == BOTH_NORMALIZATION) {
 		// Cumulative histogram, find maximum and minimum
-		qreal max(0), min(result.features[0]);
-		for (int i(0); i<result.features.size(); i++) {
+		qreal max(0), min(result[0]);
+		for (int i(0); i<result.size(); i++) {
 			if (histogramCumulative && i>0)
-				result.features[i] += result.features[i-1];
-			if (result.features[i] > max)
-				max = result.features[i];
-			if (result.features[i] < min)
-				min = result.features[i];
+				result[i] += result[i-1];
+			if (result[i] > max)
+				max = result[i];
+			if (result[i] < min)
+				min = result[i];
 		}
 		
 		// Normalize and quantize
-		for (int i(0); i<result.features.size(); i++) {
-			qreal x = qreal(result.features[i] - min) / (max - min);
-			result.features[i] = x*factor;
+		for (int i(0); i<result.size(); i++) {
+			qreal x = qreal(result[i] - min) / (max - min);
+			if (histogramQuantization < 32)
+				result[i] = uint ( x * factor );
+			else
+				result[i] = x;
 		}
 	}
 }
 
 void ColorHistogram::resizeFeatureVector()
 {
-	int bins(0);
-	if (histogramType == COMBINEDHISTOGRAM) {
-		bins=1;
-		for (int i(0); i<componentCount; i++) {
-			if (colorQuantization[i] == 0) continue;
-			if (cqScheme == BINARY)
-				bins *= pow(2, colorQuantization[i]);
-			else
-				bins *= colorQuantization[i];
-		}
-		
-	} else if (histogramType == SPLITHISTOGRAM) {
-		for (int i(0); i<componentCount; i++)
-			if (cqScheme == BINARY)
-				bins += pow(2, colorQuantization[i]);
-			else
-				bins += colorQuantization[i];
-	}
-	
-	result.features.resize( bins );
-	result.features.fill( 0 , bins );
+	result.resize( size() );
+	result.fill( 0 , size() );
 }
 
-FeatureVector ColorHistogram::extractFeatures(const uchar *imageData, int size)
+FeatureVector ColorHistogram::extractFeatures(const uchar *imageData, int width, int height)
 {
 	resizeFeatureVector();
 	
-	int pixel[4]; // Storage for one pixel
+	Pixel p; // Storage for one pixel
 	
 	// Calculate histogram
-	for (int i(0); i<size; i+=4) {
-		pixel[0] = imageData[i+2]; // RED
-		pixel[1] = imageData[i+1]; // GREEN
-		pixel[2] = imageData[i]; // BLUE
+	for (int i(0); i<width*height*4; i+=4) {
+		p.model = Pixel::RGB;
+		p.c[0] = imageData[i+2]; // RED
+		p.c[1] = imageData[i+1]; // GREEN
+		p.c[2] = imageData[i]; // BLUE
 		// imageData[i+3] is Alpha or unused
 		
-		convertColorModel(pixel);
-		colorQuantize(pixel);
+		p.convertColorModel(colorModel);
+		colorQuantize(p);
 		
-		incrementHistogram(pixel);
+		incrementHistogram(p);
 	}
 	
 	/*QString output;
-	for (int i = 0; i < result.features.size(); i++) {
-		output += QString("%1 ").arg(result.features[i]);
+	for (int i = 0; i < result.size(); i++) {
+		output += QString("%1 ").arg(result[i]);
 	}
 	qDebug()<<"Image histogram:"<<output;*/
 	
-	histogramNormalizeQuantize(size/4);
+	histogramNormalizeQuantize(width*height);
 	
 	/*output = "";
-	for (int i = 0; i < result.features.size(); i++) {
-		output += QString("%1 ").arg(result.features[i]);
+	for (int i = 0; i < result.size(); i++) {
+		output += QString("%1 ").arg(result[i]);
 	}
 	qDebug()<<"After normalization:"<<output;*/
 	
@@ -349,188 +308,81 @@ FeatureVector ColorHistogram::extractFeatures(const uchar *imageData, int size)
 }
 
 
+// Prepare distance calculation parameters for quadratic distance
+// Currently works only for combined histogram in RGB space
+// For other color spaces need to implement conversion to Lab
+// TODO rename this method to perceptualDistance and cleanup
+void ColorHistogram::setQuadratic()
+{
+	if (histogramType != COMBINEDHISTOGRAM) return;
+	if (colorModel != Pixel::RGB) return;
+	if (distanceMetric != DistanceMetric::QUADRATIC) return;
+	
+	QVector<double> result;
+	Pixel pixel; // Storage for one pixel
+	Pixel newpixel;
+	int delta[3];
+	QVector<Pixel> labPixels;
+	
+	// Convert quantizations to bin deltas and set pixel to center of first bin
+	for (int i(0); i<3; i++) {
+		if (cqScheme == BINARY)
+			delta[i] = 256 / pow(2,colorQuantization[i]);
+		else
+			delta[i] = 256 / colorQuantization[i];
+		pixel.c[i] = delta[i]/2;
+	}
+	
+	// Convert center of each bin to CIELab and put into vector
+	for (int i(0); i<colorQuantization[0]; i++) {
+		for (int j(0); j<colorQuantization[1]; j++) {
+			for (int k(0); k<colorQuantization[2]; k++) {
+				// Copy pixel to newpixel so we dont lose old values
+				for (int l(0); l<3; l++)
+					newpixel.c[l] = pixel.c[l];
+				
+				newpixel.convertColorModel(Pixel::LAB);
+				
+				// Add newpixel to labPixels vector
+				Pixel tmp;
+				for (int l(0); l<3; l++)
+					tmp.c[l] = newpixel.c[l];
+				labPixels.append(tmp);
+				
+				pixel.c[2] += delta[2];
+			}
+			pixel.c[2] = delta[2]/2;
+			pixel.c[1] += delta[1];
+		}
+		pixel.c[1] = delta[1]/2;
+		pixel.c[0] += delta[0];
+	}
+	
+	// Find L2 distance from each Lab pixel to each other Lab pixel
+	double maxDist(0);
+	for (int i(0); i<labPixels.size(); i++) {
+		for (int j(0); j<labPixels.size(); j++) {
+			double dist(0);
+			for (int k(0); k<3; k++)
+				dist += (labPixels[i].c[k] - labPixels[j].c[k])*(labPixels[i].c[k] - labPixels[j].c[k]);
+			result.append(sqrt(dist));
+			
+			// Find maximum distance
+			if (dist > maxDist)
+				maxDist = dist;
+		}
+	}
+	
+	// Normalize result vector and convert to similarities
+	for (int i(0); i<result.size(); i++) {
+		result[i] = 1 - (result[i]/maxDist);
+	}
+	
+	dmObject.parameterVector = result;
+}
+
 double ColorHistogram::distance(FeatureVector f1, FeatureVector f2)
 {
-	switch(distanceMetric) {
-
-	case EUCLIDEAN:
-	{
-		double sum(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum += (f2.features[i] - f1.features[i]) * (f2.features[i] - f1.features[i]);
-		}
-		return sqrt(qreal(sum));
-	}
-	
-	case MATSUSHITA:
-	{
-		double sum(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			double k = sqrt(f2.features[i]) - sqrt(f1.features[i]);
-			sum += k * k;
-		}
-		return sqrt(sum);
-	}
-	
-	case BRAY_CURTIS:
-	{
-		// Bray-Curtis distance
-		double sum1(0), sum2(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum1 += double(abs(f2.features[i] - f1.features[i]));
-			sum2 += (f2.features[i] + f1.features[i]);
-		}
-		return sum1 / sum2;
-	}
-	
-	case MANHATTAN:
-	{
-		// Manhattan distance
-		int sum(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum += abs(f2.features[i] - f1.features[i]);
-		}
-		return double(sum) / f1.features.size();
-	}
-	
-	case SOERGEL:
-	{
-		// Soergel distance
-		double sum1(0), sum2(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum1 += double(abs(f2.features[i] - f1.features[i]));
-			sum2 += qMax(f2.features[i], f1.features[i]);
-		}
-		return sum1 / sum2;
-	}
-	
-	case BHATTACHARYA:
-	{
-		double sum(0), sum1(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum += sqrt(fabs(f2.features[i] - f1.features[i]));
-			sum1 += f1.features[i];
-		}
-		return log10(sum/sum1);
-	}
-	
-	case CHI_SQUARE:
-	{
-		double sum(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum += ((f2.features[i] - f1.features[i])*(f2.features[i] - f1.features[i])) / (f2.features[i] + f1.features[i]);
-		}
-		return sum;
-	}
-	
-	case CANBERRA:
-	{
-		double sum(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum += double(fabs(f2.features[i] - f1.features[i])) / (f2.features[i] + f1.features[i]);
-		}
-		return sum;
-	}
-	
-	case HIST_INT:
-	{
-		int sum(0), sum1(0), sum2(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum  += qMin(f2.features[i], f1.features[i]);
-			sum1 += f1.features[i];
-			sum2 += f2.features[i];
-		}
-		return 1 - double(sum) / qMin (sum1, sum2);
-	}
-	
-	case JSD:
-	{
-		double sum(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			double mi((f2.features[i] + f1.features[i]) / 2);
-			if (f1.features[i] > 0)
-				sum += f1.features[i] * log(double(f1.features[i]) / mi);
-			if (f2.features[i] > 0)
-				sum += f2.features[i] * log(double(f2.features[i]) / mi);
-		}
-		return sum;
-	}
-		
-	case ANGULAR:
-	{
-		double sum1(0), sum2(0), sum3(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum1 += f2.features[i] * f1.features[i];
-			sum2 += f2.features[i] * f2.features[i];
-			sum3 += f1.features[i] * f1.features[i];
-		}
-		return 1 - (sum1 / sqrt(sum2 * sum3) );
-	}
-		
-	case CHORD:
-	{
-		double sum1(0), sum2(0), sum3(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum1 += f2.features[i] * f1.features[i];
-			sum2 += f2.features[i] * f2.features[i];
-			sum3 += f1.features[i] * f1.features[i];
-		}
-		return sqrt(2 - 2*(sum1 / sqrt(sum2 * sum3)));
-	}
-		
-	case WAVE_HEDGES:
-	{
-		double sum(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum += (1 - double(qMin(f2.features[i], f1.features[i])) / qMax(f2.features[i], f1.features[i]));
-		}
-		return sum;
-	}
-		
-	case WED:
-	{
-		double sum(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			double k(f1.features[i]);
-			if (k==0) k=1;
-			sum += k * (f2.features[i] - f1.features[i]) * (f2.features[i] - f1.features[i]);
-		}
-		return sum;
-	}
-		
-	case K_S: // Kolmogorov-Smirnov
-	{
-		int max(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			int d(abs(f2.features[i] - f1.features[i]));
-			if (d>max) max=d;
-		}
-		return max;
-	}
-		
-	case KUIPER:
-	{
-		double max1(0), max2(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			double d1(f2.features[i] - f1.features[i]);
-			double d2(f1.features[i] - f2.features[i]);
-			if (d1>max1) max1=d1;
-			if (d2>max2) max2=d2;
-		}
-		return max1+max2;
-	}
-	
-	case MEAN:
-	{
-		double sum1(0), sum2(0);
-		for (int i(0); i<f1.features.size(); i++) {
-			sum1 += f1.features[i];
-			sum2 += f2.features[i];
-		}
-		return fabs(sum1 / f1.features.size() - sum2 / f2.features.size());
-	}
-	}
-	
-	return 0; // No distance metric found
+	return dmObject.distance(distanceMetric, f1, f2);
 }
 
