@@ -1,5 +1,7 @@
 #include "imagefeatures.h"
+#include "colorhistogram.h"
 #include "luetal_v2.h"
+#include "cedd.h"
 
 #include <QDebug>
 
@@ -15,6 +17,8 @@ ImageFeatures* ImageFeatures::factory(QString name)
 {
 	if (name == ColorHistogram::static_name())
 		return new ColorHistogram();
+	if (name == CEDD::static_name())
+		return new CEDD();
 	if (name == LuEtAl_v2::static_name())
 		return new LuEtAl_v2();
 }
