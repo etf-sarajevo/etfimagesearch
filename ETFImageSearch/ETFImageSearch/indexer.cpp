@@ -1,8 +1,9 @@
 #include "indexer.h"
 #include "globals.h"
 
-#include "sequentialindexer.h"
 #include "lshindexer.h"
+#include "treeindexer.h"
+#include "sequentialindexer.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -340,6 +341,8 @@ Indexer* Indexer::factory(QString name, ImageFeatures* alg, QString path)
 		indexer = new SequentialIndexer(alg, path);
 	if (name == LSHIndexer::static_name())
 		indexer = new LSHIndexer(alg, path);
+	if (name == TreeIndexer::static_name())
+		indexer = new TreeIndexer(alg, path);
 	return indexer;
 }
 
