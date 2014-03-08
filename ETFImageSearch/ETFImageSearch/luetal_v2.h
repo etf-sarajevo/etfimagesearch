@@ -1,16 +1,20 @@
-#ifndef LIUETAL_V2_H
-#define LIUETAL_V2_H
+#ifndef LUETAL_V2_H
+#define LUETAL_V2_H
 
-#include "searchalgorithm.h"
+#include "imagefeatures.h"
 
 #define MAX_COMPONENTS 6
 
-class LiuEtAl_v2 : public DCTSearchAlgorithm
+class LuEtAl_v2 : public DCTFeatures
 {
 public:
-	LiuEtAl_v2();
+	LuEtAl_v2();
 	
-	QString name() { return QString("liuetal_v2"); }
+	QString name() { return QString("Lu et al. v2"); }
+	static QString static_name() { return QString("Lu et al. v2"); }
+	
+	int size() { return 804; }
+	DataType dataType() { return ImageFeatures::FLOAT32; }
 	
 	void init();
 	void processBlock(short int* block, int component);
@@ -44,4 +48,4 @@ private:
 	double kME, kD;
 };
 
-#endif // LIUETAL_V2_H
+#endif // LUETAL_V2_H
