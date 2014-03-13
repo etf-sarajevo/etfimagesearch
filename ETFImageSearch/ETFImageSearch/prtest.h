@@ -19,7 +19,7 @@ public:
 	
 	bool loadCategories();
 	void execute();
-	bool optimize(QStringList variables);
+	bool optimize(QStringList variables, QString trainingSetFilename);
 	void showGraph();
 	
 	double AP, AP16, AWP16, ANMRR, MAP;

@@ -251,9 +251,9 @@ void PRTest::showGraph()
 }
 
 
-bool PRTest::optimize(QStringList variables)
+bool PRTest::optimize(QStringList variables, QString trainingSetFilename)
 {
-	QFile file(path + QDir::separator() + "training_set.txt");
+	QFile file(path + QDir::separator() + trainingSetFilename);
 	if (!file.exists())
 		return false;
 	
@@ -306,6 +306,7 @@ bool PRTest::optimize(QStringList variables)
 	}
 	
 	// Setup progress dialog
+	// TODO: PRTest class should be headless!!!
 	QProgressDialog* progressDialog = new QProgressDialog(QString("Optimizing variables for %1").arg(alg->name()), QString(), 0, totalPasses);
 	progressDialog->show();
 	QTime time = QTime::currentTime();

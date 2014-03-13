@@ -9,6 +9,14 @@ HSL10bin::HSL10bin() : ColorHistogram(), blackThreshold(0.15), whiteThreshold(0.
 	setHistogramQuantization(8);
 	setHistogramCumulative(false);
 	setDistanceMetric(DistanceMetric::MATSUSHITA);
+	
+	// Variables
+	variables.append(Variable("blackLower", 0, 1, 0.01, 0.06)); variableValues[0] = 0.06;
+	variables.append(Variable("blackUpper", 0, 1, 0.01, 0.17)); variableValues[1] = 0.17;
+	variables.append(Variable("whiteLower", 0.5, 1, 0.01, 0.60)); variableValues[2] = 0.60;
+	variables.append(Variable("whiteUpper", 0.5, 1, 0.01, 0.96)); variableValues[3] = 0.96;
+	variables.append(Variable("grayLower",  0, 0.4, 0.01, 0.10)); variableValues[4] = 0.10;
+	variables.append(Variable("grayUpper",  0.29, 0.4, 0.01, 0.21)); variableValues[5] = 0.21;
 }
 
 void HSL10bin::setParams(double blackThreshold, double whiteThreshold, double grayThreshold, int hueQuant)
@@ -27,9 +35,9 @@ void HSL10bin::colorQuantize(Pixel& p)
 void HSL10bin::incrementHistogram(const Pixel &p)
 {
 	
-	double blackLower=0.06, blackUpper=0.17 ; // middle = 0.15
-	double  grayLower=0.10,  grayUpper=0.21 ; // middle = 0.15
-	double whiteLower=0.60, whiteUpper=0.96; // middle = 0.83
+	double blackLower=variableValues[0], blackUpper=variableValues[1];
+	double  grayLower=variableValues[4],  grayUpper=variableValues[5];
+	double whiteLower=variableValues[2], whiteUpper=variableValues[3];
 	
 	double fuzzyHueBounds[14] = {0, 10, 30, 60, 80, 130, 150, 200, 220, 230, 250, 280, 300, 360};
 	int fuzzyHueBoundsCount(14);
