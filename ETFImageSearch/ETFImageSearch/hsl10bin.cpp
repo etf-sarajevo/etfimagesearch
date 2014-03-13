@@ -15,8 +15,8 @@ HSL10bin::HSL10bin() : ColorHistogram(), blackThreshold(0.15), whiteThreshold(0.
 	variables.append(Variable("blackUpper", 0, 1, 0.01, 0.17)); variableValues[1] = 0.17;
 	variables.append(Variable("whiteLower", 0.5, 1, 0.01, 0.60)); variableValues[2] = 0.60;
 	variables.append(Variable("whiteUpper", 0.5, 1, 0.01, 0.96)); variableValues[3] = 0.96;
-	variables.append(Variable("grayLower",  0, 0.4, 0.01, 0.10)); variableValues[4] = 0.10;
-	variables.append(Variable("grayUpper",  0.29, 0.4, 0.01, 0.21)); variableValues[5] = 0.21;
+	variables.append(Variable("grayLower",  0, 0.5, 0.01, 0.10)); variableValues[4] = 0.10;
+	variables.append(Variable("grayUpper",  0, 0.5, 0.01, 0.21)); variableValues[5] = 0.21;
 }
 
 void HSL10bin::setParams(double blackThreshold, double whiteThreshold, double grayThreshold, int hueQuant)
