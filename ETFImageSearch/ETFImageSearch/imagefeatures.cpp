@@ -20,8 +20,8 @@ ImageFeatures* ImageFeatures::factory(QString name)
 {
 	if (name == ColorHistogram::static_name())
 		return new ColorHistogram();
-	if (name == HSL10bin::static_name())
-		return new HSL10bin();
+	if (name == FuzzyHistogram::static_name())
+		return new FuzzyHistogram();
 	if (name == CEDD::static_name())
 		return new CEDD();
 	if (name == LuEtAl_v2::static_name())

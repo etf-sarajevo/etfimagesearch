@@ -18,7 +18,7 @@ Pixel::ColorModel Pixel::fromString(QString string)
 	for (int i(0); i<NR_MODELS; i++)
 		if (string == names[i])
 			return ColorModel(i);
-	return ColorModel(-1);
+	throw QString("Unknown color model %1").arg(string);
 }
 
 QString Pixel::toString(ColorModel model)
@@ -111,6 +111,22 @@ void Pixel::convertColorModel(ColorModel model)
 		if (H==256) H=255;
 		
 		c[0] = H; c[1] = S; c[2] = L;
+		
+		return;
+	}
+	
+	if (model == HSI) {
+		int H, S, I;
+		
+		QColor color(R, G, B);
+		color.getHsl(&H, &S, &I);
+		
+		H = (H*256)/360; // Rescale to 0-255
+		if (H==256) H=255;
+		
+		I = (R+G+B)/765; // 765 = 3*255
+		
+		c[0] = H; c[1] = S; c[2] = I;
 		
 		return;
 	}

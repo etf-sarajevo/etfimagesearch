@@ -138,8 +138,19 @@ int main(int argc, char *argv[])
 	ImageFeatures* feature;
 	if (useIndex == -1) {
 		feature = ImageFeatures::factory(featureName);
-		if (!params.isEmpty())
-			feature->setParams(params.join(QString(';')));
+		if (!params.isEmpty()) {
+			// Check for invalid params
+			try {
+				feature->setParams(params.join(QString(';')));
+			} catch (QString s) {
+				qDebug() << s;
+				return -1;
+			} catch (const char e[]) {
+				std::cerr << e << std::endl;
+				return -1;
+			}
+		}
+
 		idx = Indexer::factory(indexer, feature, imagePath);
 		if (verbosityLevel>0) std::cerr << "Building first index...\n";
 		idx->buildIndex();

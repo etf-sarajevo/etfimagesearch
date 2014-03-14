@@ -4,6 +4,7 @@
 #include <QVector>
 #include <QString>
 #include <QMap>
+#include <QVariant>
 #include <vector>
 
 #include "featurevector.h"
@@ -79,16 +80,58 @@ public:
 	static void vectorDump(std::vector<double> vector);
 	static void vectorDump(std::vector<int> vector);
 	
-	// Variables of this feature that can be set from outside
+	
+	
+	// Variables of feature that can be set from outside
 	// Feature constructor should define the list of variables and set them to their optimal values
 	struct Variable {
 		QString name;
-		double min, max, step, value;
-		Variable(QString name, double min, double max, double step, double value) : name(name), min(min), max(max), step(step), value(value) {}
-		Variable() : name(""), min(0), max(0), step(0) {}
+		double value, min, max, step;
+		Variable(QString name, double value, double min, double max, double step) : name(name), value(value), min(min), max(max), step(step) {}
+		Variable() : name(""), value(0), min(0), max(0), step(0) {}
 	};
+	
+protected:
+	// Since features access variable values a big number of times, we provide this accellerated model
+	double variableValues[100];
 	QVector<Variable> variables;
-	double variableValues[10]; // This is faster :s
+
+	// Method for derived classes to define new variables
+	void addVariable(Variable v) {
+		for (int i(0); i<variables.size(); i++) {
+			if (v.name == variables[i].name) {
+				variables[i] = v;
+				variableValues[i] = v.value;
+				return;
+			}
+		}
+		if (variables.size() >= 100)
+			throw "Too many variables";
+		variableValues[variables.size()] = v.value;
+		variables.append(v);
+	}
+	
+public:
+	Variable getVariable(QString name) const {
+		Variable v;
+		foreach (v, variables)
+			if (v.name == name) return v;
+		return v;
+	}
+	// Features may override this method to throw exception in case of invalid combination
+	virtual void setVariable(QString name, double value) {
+		Variable v;
+		for (int i(0); i<variables.size(); i++)
+			if (variables[i].name == name) { 
+				variables[i].value = value;
+				variableValues[i] = value;
+				return;
+			}
+		throw QString("Unknown variable %1").arg(name);
+	}
+	QVector<Variable> getAllVariables() const {
+		return variables;
+	}
 };
 
 

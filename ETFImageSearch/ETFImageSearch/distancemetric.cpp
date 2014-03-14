@@ -331,7 +331,7 @@ DistanceMetric::Type DistanceMetric::fromString(QString string)
 	for (int i(0); i<NR_METRICS; i++)
 		if (string == names[i])
 			return Type(i);
-	return Type(-1);
+	throw QString("Unknown distance metric %1").arg(string);
 }
 
 QString DistanceMetric::toString(Type type)

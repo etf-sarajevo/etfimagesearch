@@ -266,7 +266,7 @@ bool PRTest::optimize(QStringList variables, QString trainingSetFilename)
 	}
 	
 	QString var;
-	QVector<ImageFeatures::Variable>& vars(alg->variables); // Shortcut
+	QVector<ImageFeatures::Variable> vars(alg->getAllVariables()); // Shortcut
 	QVector<int> varIndices;
 	foreach (var, variables) {
 		bool found(false);
@@ -302,21 +302,23 @@ bool PRTest::optimize(QStringList variables, QString trainingSetFilename)
 		int idx=varIndices[i];
 		totalPasses += int((vars[idx].max - vars[idx].min) / vars[idx].step + 0.5);
 		vars[idx].value = vars[idx].min;
-		alg->variableValues[idx] = vars[idx].min;
+		alg->setVariable(vars[idx].name, vars[idx].value);
 	}
 	
 	// Setup progress dialog
-	// TODO: PRTest class should be headless!!!
-	QProgressDialog* progressDialog = new QProgressDialog(QString("Optimizing variables for %1").arg(alg->name()), QString(), 0, totalPasses);
-	progressDialog->show();
-	QTime time = QTime::currentTime();
+	emit startedOptimize(totalPasses);
+	// PRTest class should be headless - no dialog here
+	//QProgressDialog* progressDialog = new QProgressDialog(QString("Optimizing variables for %1").arg(alg->name()), QString(), 0, totalPasses);
+	//progressDialog->show();
+	QTime time = QTime::currentTime(); // unused! do something with time
 	
 	// Go through all possible variable values
 	bool done(false);
 	while (!done) {
 		currentPass++;
-		progressDialog->setLabelText(QString("Pass %1").arg(currentPass));
-		progressDialog->setValue(progressDialog->value()+1);
+		//progressDialog->setLabelText(QString("Pass %1").arg(currentPass));
+		//progressDialog->setValue(progressDialog->value()+1);
+		emit optimizePass(currentPass);
 		
 		// Output
 		QString output = QString("Pass %1 ").arg(currentPass);
@@ -394,15 +396,30 @@ bool PRTest::optimize(QStringList variables, QString trainingSetFilename)
 		// Next optimize values
 		for (int i(0); i<varIndices.size(); i++) {
 			int idx=varIndices[i];
-			vars[idx].value += vars[idx].step;
-			alg->variableValues[idx] = vars[idx].value;
-			if (vars[idx].value <= vars[idx].max &&
-					(i==1 || vars[idx].value <= vars[varIndices[1]].value)) break;
-			vars[idx].value = vars[idx].min;
-			alg->variableValues[idx] = vars[idx].value;
+			
+			// Try incrementing value by step
+			for(;;) {
+				vars[idx].value = vars[idx].value + vars[idx].step;
+				
+				// If greater than max, set to min so the next variable gets incremented
+				if (vars[idx].value > vars[idx].max) {
+					vars[idx].value = vars[idx].min;
+					break;
+				}
+				try {
+					alg->setVariable(vars[idx].name, vars[idx].value);
+					break;
+				} catch(...) {}
+			}
+			
+			// If value is min, that means we must increment the next variable
+			if (vars[idx].value != vars[idx].min) break;
+
+			// This is the last variable, test is done
 			if (i == vars.size()-1) done=true;
 		}
 	}
+	emit finishedOptimize();
 	
 	return true;
 }

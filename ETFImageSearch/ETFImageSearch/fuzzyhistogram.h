@@ -1,5 +1,5 @@
-#ifndef HSL10BIN_H
-#define HSL10BIN_H
+#ifndef FUZZYHISTOGRAM_H
+#define FUZZYHISTOGRAM_H
 
 #include "colorhistogram.h"
 
@@ -8,24 +8,28 @@
  * Fuzzy color histogram with 10 bins in HSL color model
  */
 
-class HSL10bin : public ColorHistogram
+class FuzzyHistogram : public ColorHistogram
 {
 public:
-	HSL10bin();
+	FuzzyHistogram();
 	
-	// Some params (not used actually I think)
-	void setParams(double blackThreshold, double whiteThreshold, double grayThreshold, int hueQuant);
-	
-	QString name() { return QString("HSL Fuzzy Histogram"); }
-	static QString static_name() { return QString("HSL Fuzzy Histogram"); }
-	int size() { return 10; }
+	QString name() { return QString("Fuzzy Histogram"); }
+	static QString static_name() { return QString("Fuzzy Histogram"); }
+	int size() { return numberOfBins; }
 	
 	virtual void colorQuantize(Pixel &p);
 	virtual void incrementHistogram(const Pixel& p);
 	
+	void setParams(QString params);
+	QString getParams();
+	
+	// Some variable values are invalid e.g. lower boundaries can't be greater than higher
+	void setVariable(QString name, double value);
+
 private:
-	double blackThreshold, whiteThreshold, grayThreshold;
-	int hueQuant;
+	Pixel::ColorModel blackModel, whiteModel, grayModel, hueModel;
+	int numberOfBins;
+	void convertModels(double& hue, double& black, double& white, double& gray, const Pixel& p);
 };
 
 #endif // HSL10BIN_H

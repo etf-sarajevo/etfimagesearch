@@ -18,7 +18,6 @@ SOURCES += main.cpp\
     prtest.cpp \
     qcustomplot.cpp \
     colorhistogram.cpp \
-    hsl10bin.cpp \
     treeindexer.cpp \
     lshindexer.cpp \
     imagefeatures.cpp \
@@ -29,14 +28,14 @@ SOURCES += main.cpp\
     cedd.cpp \
     zhangetal.cpp \
     hmmdquant.cpp \
-    pixel.cpp
+    pixel.cpp \
+    fuzzyhistogram.cpp
 
 HEADERS  += mainwindow.h \
     indexer.h \
     prtest.h \
     qcustomplot.h \
     colorhistogram.h \
-    hsl10bin.h \
     treeindexer.h \
     lshindexer.h \
     imagefeatures.h \
@@ -49,7 +48,8 @@ HEADERS  += mainwindow.h \
     cedd.h \
     zhangetal.h \
     hmmdquant.h \
-    pixel.h
+    pixel.h \
+    fuzzyhistogram.h
 
 FORMS    += mainwindow.ui \
     newindexdialog.ui

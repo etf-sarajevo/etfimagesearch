@@ -28,6 +28,9 @@ signals:
 	void startedPRTest(int count);
 	void testingFile(QString fileName);
 	void finishedPRTest();
+	void startedOptimize(int count);
+	void optimizePass(int pass);
+	void finishedOptimize();
 
 private:
 	QString path;

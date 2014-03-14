@@ -1,8 +1,8 @@
-#include "hsl10bin.h"
+#include "fuzzyhistogram.h"
 
-HSL10bin::HSL10bin() : ColorHistogram(), blackThreshold(0.15), whiteThreshold(0.80), grayThreshold(0.10), hueQuant(7)
+FuzzyHistogram::FuzzyHistogram() : ColorHistogram(), blackModel(Pixel::HSL), whiteModel(Pixel::HSL), grayModel(Pixel::HSL), hueModel(Pixel::HSL), numberOfBins(10)
 {
-	setColorModel(Pixel::HSL);
+	setColorModel(Pixel::RGB);
 	setColorQuantization(3,3,3);
 	setHistogramType(ColorHistogram::COMBINEDHISTOGRAM);
 	setHistogramNormalization(ColorHistogram::NO_NORMALIZATION);
@@ -11,28 +11,93 @@ HSL10bin::HSL10bin() : ColorHistogram(), blackThreshold(0.15), whiteThreshold(0.
 	setDistanceMetric(DistanceMetric::MATSUSHITA);
 	
 	// Variables
-	variables.append(Variable("blackLower", 0, 1, 0.01, 0.06)); variableValues[0] = 0.06;
-	variables.append(Variable("blackUpper", 0, 1, 0.01, 0.17)); variableValues[1] = 0.17;
-	variables.append(Variable("whiteLower", 0.5, 1, 0.01, 0.60)); variableValues[2] = 0.60;
-	variables.append(Variable("whiteUpper", 0.5, 1, 0.01, 0.96)); variableValues[3] = 0.96;
-	variables.append(Variable("grayLower",  0, 0.5, 0.01, 0.10)); variableValues[4] = 0.10;
-	variables.append(Variable("grayUpper",  0, 0.5, 0.01, 0.21)); variableValues[5] = 0.21;
+	addVariable(Variable("blackLower", 0.06, 0, 1, 0.01)); // variableValues[0] = 0.06;
+	addVariable(Variable("blackUpper", 0.17, 0, 1, 0.01)); // variableValues[1] = 0.17;
+	addVariable(Variable("whiteLower", 0.60, 0.5, 1, 0.01)); // variableValues[2] = 0.60;
+	addVariable(Variable("whiteUpper", 0.96, 0.5, 1, 0.01)); // variableValues[3] = 0.96;
+	addVariable(Variable("grayLower",  0.10, 0, 0.5, 0.01)); // variableValues[4] = 0.10;
+	addVariable(Variable("grayUpper",  0.21, 0, 0.5, 0.01)); // variableValues[5] = 0.21;
 }
 
-void HSL10bin::setParams(double blackThreshold, double whiteThreshold, double grayThreshold, int hueQuant)
+void FuzzyHistogram::setParams(QString params)
 {
-	this->blackThreshold = blackThreshold;
-	this->whiteThreshold = whiteThreshold;
-	this->grayThreshold  = grayThreshold;
-	this->hueQuant       = hueQuant;
+	QStringList paramsList = params.split(';');
+	blackModel == Pixel::fromString(paramsList[0]);
+	whiteModel == Pixel::fromString(paramsList[1]);
+	grayModel  == Pixel::fromString(paramsList[2]);
+	bool ok;
+	numberOfBins == paramsList[2].toInt(&ok);
+	
+	// Optimize hue model to avoid unneccessary conversions
+	if (blackModel == Pixel::HSV || blackModel == Pixel::HSL || blackModel == Pixel::IHLS || blackModel == Pixel::HMMD)
+		hueModel = blackModel;
+	else if (whiteModel == Pixel::HSV || whiteModel == Pixel::HSL || whiteModel == Pixel::IHLS || whiteModel == Pixel::HMMD)
+		hueModel = whiteModel;
+	else if (grayModel == Pixel::HSV || grayModel == Pixel::HSL || grayModel == Pixel::IHLS || grayModel == Pixel::HMMD)
+		hueModel = grayModel;
+	else
+		hueModel = Pixel::HSV;
 }
 
-void HSL10bin::colorQuantize(Pixel& p)
+QString FuzzyHistogram::getParams()
+{
+	QStringList paramsList;
+	paramsList.append(Pixel::toString(blackModel));
+	paramsList.append(Pixel::toString(whiteModel));
+	paramsList.append(Pixel::toString(grayModel));
+	paramsList.append(QString("%1").arg(numberOfBins));
+	return paramsList.join(QString(';'));
+}
+
+
+void FuzzyHistogram::colorQuantize(Pixel& p)
 {
 	return; // Don't quantize color
 }
 
-void HSL10bin::incrementHistogram(const Pixel &p)
+// Some smart shit to avoid unneccessary color model conversions
+void FuzzyHistogram::convertModels(double& hue, double& black, double& white, double& gray, const Pixel& p)
+{
+	Pixel huePix(p);
+	huePix.convertColorModel(hueModel);
+	
+	Pixel blackPix(p), whitePix(p), grayPix(p);
+	if (blackModel == hueModel)
+		blackPix = huePix;
+	else
+		blackPix.convertColorModel(blackModel);
+	
+	if (whiteModel == hueModel)
+		whitePix = huePix;
+	else if (whiteModel == blackModel)
+		whitePix = blackPix;
+	else
+		whitePix.convertColorModel(whiteModel);
+	
+	if (grayModel == hueModel)
+		grayPix = huePix;
+	else if (grayModel  == blackModel)
+		grayPix = blackPix;
+	else if (grayModel  == whiteModel)
+		grayPix = whitePix;
+	else
+		grayPix.convertColorModel(grayModel);
+	
+	hue = double(huePix.c[0])/255; // Not strictly correct but...
+	if (blackModel == Pixel::YUV || blackModel == Pixel::LAB)
+		black = double(blackPix.c[0])/255;
+	else
+		black = double(blackPix.c[2])/255;
+
+	if (whiteModel == Pixel::YUV || whiteModel == Pixel::LAB)
+		white = double(whitePix.c[0])/255;
+	else
+		white = double(whitePix.c[2])/255;
+	
+	gray = double(grayPix.c[1])/255; // results for YUV, LAB, RGB etc. will be meaningless
+}
+
+void FuzzyHistogram::incrementHistogram(const Pixel &p)
 {
 	
 	double blackLower=variableValues[0], blackUpper=variableValues[1];
@@ -41,42 +106,44 @@ void HSL10bin::incrementHistogram(const Pixel &p)
 	
 	double fuzzyHueBounds[14] = {0, 10, 30, 60, 80, 130, 150, 200, 220, 230, 250, 280, 300, 360};
 	int fuzzyHueBoundsCount(14);
+	
+	double hue, black, white, gray;
+	convertModels(hue,black,white,gray,p);
 		
-	double H(double(p.c[0])/255), S(double(p.c[1])/255), L(double(p.c[2])/255);
 	int color;
 	
 	double colorPart = 1.0;
-	if (L<=blackLower) {
+	if (black<=blackLower) {
 		result[0]++; // black = 0
 		return;
-	} else if (L<=blackUpper) {
-		double black = (L-blackLower)/(blackUpper-blackLower);
-		result[0] += black;
-		colorPart = 1-black;
+	} else if (black<=blackUpper) {
+		double blackPart = (black-blackLower)/(blackUpper-blackLower);
+		result[0] += blackPart;
+		colorPart = 1-blackPart;
 	}
 	
-	if (L>=whiteUpper) {
+	if (white>=whiteUpper) {
 		result[1]++; // white = 1
 		return;
-	} else if (L>=whiteLower) {
-		double white = (L-whiteLower)/(whiteUpper-whiteLower);
-		result[1] += white;
-		colorPart = 1-white;
+	} else if (white>=whiteLower) {
+		double whitePart = (white-whiteLower)/(whiteUpper-whiteLower);
+		result[1] += whitePart;
+		colorPart = 1-whitePart;
 	}
 	
-	if (S<=grayLower) {
+	if (gray<=grayLower) {
 		result[2] += colorPart; // gray = 2
 		return;
-	} else if (S<=grayUpper) {
-		double gray = (S-grayLower)/(grayUpper-grayLower);
-		gray *= colorPart;
-		result[2] += gray;
-		colorPart -= gray;
+	} else if (gray<=grayUpper) {
+		double grayPart = (gray-grayLower)/(grayUpper-grayLower);
+		grayPart *= colorPart;
+		result[2] += grayPart;
+		colorPart -= grayPart;
 	}
 
-	H*=360;
+	hue*=360;
 	for (int i(0); i<fuzzyHueBoundsCount-1; i++) {
-		if (H>=fuzzyHueBounds[i] && H<=fuzzyHueBounds[i+1]) {
+		if (hue>=fuzzyHueBounds[i] && hue<=fuzzyHueBounds[i+1]) {
 			if (i%2 == 0) {
 				int color = 3 + i/2;
 				result[color] += colorPart;
@@ -84,7 +151,7 @@ void HSL10bin::incrementHistogram(const Pixel &p)
 				int leftColor = 3 + i/2;
 				int rightColor = leftColor+1;
 				if (rightColor == 10) rightColor=3;
-				double rightAmount = (H-fuzzyHueBounds[i])/(fuzzyHueBounds[i+1]-fuzzyHueBounds[i]);
+				double rightAmount = (hue-fuzzyHueBounds[i])/(fuzzyHueBounds[i+1]-fuzzyHueBounds[i]);
 				result[rightColor] += rightAmount*colorPart;
 				result[leftColor] += (1-rightAmount)*colorPart;
 			}
@@ -163,5 +230,16 @@ void HSL10bin::incrementHistogram(const Pixel &p)
 		if (color==2+hueQuant*2) color--;*//*
 	}
 	result[color]++;*/
+}
+
+void FuzzyHistogram::setVariable(QString name, double value)
+{
+	ImageFeatures::setVariable(name, value);
+	if (getVariable("blackLower").value > getVariable("blackUpper").value)
+		throw "blackLower > blackUpper";
+	if (getVariable("whiteLower").value > getVariable("whiteUpper").value)
+		throw "whiteLower > whiteUpper";
+	if (getVariable("grayLower").value  > getVariable("grayUpper").value)
+		throw "grayLower  > grayUpper";
 }
 

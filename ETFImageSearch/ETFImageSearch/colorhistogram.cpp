@@ -61,12 +61,16 @@ void ColorHistogram::setParams(QString params)
 		setColorQuantization(quantizations[0].toInt(), quantizations[1].toInt(), quantizations[2].toInt(), quantizations[3].toInt());
 	else if (quantizations.size() == 3)
 		setColorQuantization(quantizations[0].toInt(), quantizations[1].toInt(), quantizations[2].toInt());
+	else
+		throw "Invalid quantization";
 	
 	// paramsList[2] = histogram type
 	if (paramsList[2] == "COMBINED")
 		setHistogramType(COMBINEDHISTOGRAM);
 	else if (paramsList[2] == "SPLIT")
 		setHistogramType(SPLITHISTOGRAM);
+	else
+		throw "Invalid histogram type";
 	
 	// paramsList[3] = histogram normalization
 	if (paramsList[3] == "NO_NORMALIZATION")
@@ -75,9 +79,13 @@ void ColorHistogram::setParams(QString params)
 		setHistogramNormalization(MAX_NORMALIZATION);
 	else if (paramsList[3] == "BOTH_NORMALIZATION")
 		setHistogramNormalization(BOTH_NORMALIZATION);
+	else
+		throw "Invalid histogram normalization";
 	
 	// paramsList[4] = histogram quantization
-	setHistogramQuantization(paramsList[4].toInt());
+	bool ok;
+	setHistogramQuantization(paramsList[4].toInt(&ok));
+	if (!ok) throw "Invalid histogram quantization";
 	
 	// paramsList[5] = cumulative?
 	if (paramsList[5] == "CUMULATIVE")

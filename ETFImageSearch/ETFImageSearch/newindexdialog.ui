@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>556</width>
-    <height>386</height>
+    <height>442</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
          </item>
          <item>
           <property name="text">
-           <string>HSL Fuzzy Histogram</string>
+           <string>Fuzzy Histogram</string>
           </property>
          </item>
          <item>
