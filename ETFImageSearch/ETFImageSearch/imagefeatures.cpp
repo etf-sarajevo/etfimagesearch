@@ -1,6 +1,6 @@
 #include "imagefeatures.h"
 #include "colorhistogram.h"
-#include "hsl10bin.h"
+#include "fuzzyhistogram.h"
 #include "luetal_v2.h"
 #include "cedd.h"
 #include "hmmdquant.h"
