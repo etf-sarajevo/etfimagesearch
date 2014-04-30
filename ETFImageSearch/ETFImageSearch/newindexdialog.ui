@@ -40,7 +40,17 @@
          </item>
          <item>
           <property name="text">
+           <string>Color Moments</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>Fuzzy Histogram</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Fuzzy Spatial Histogram</string>
           </property>
          </item>
          <item>

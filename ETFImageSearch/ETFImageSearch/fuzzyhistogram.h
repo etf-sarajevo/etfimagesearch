@@ -19,6 +19,9 @@ public:
 	
 	virtual void colorQuantize(Pixel &p);
 	virtual void incrementHistogram(const Pixel& p);
+	virtual FeatureVector extractFeatures(const uchar* imageData, int width, int height) {
+		return ColorHistogram::extractFeatures(imageData, width, height);
+	}
 	
 	void setParams(QString params);
 	QString getParams();

@@ -29,7 +29,9 @@ SOURCES += main.cpp\
     zhangetal.cpp \
     hmmdquant.cpp \
     pixel.cpp \
-    fuzzyhistogram.cpp
+    fuzzyhistogram.cpp \
+    fuzzyspatialhistogram.cpp \
+    colormoments.cpp
 
 HEADERS  += mainwindow.h \
     indexer.h \
@@ -49,7 +51,9 @@ HEADERS  += mainwindow.h \
     zhangetal.h \
     hmmdquant.h \
     pixel.h \
-    fuzzyhistogram.h
+    fuzzyhistogram.h \
+    fuzzyspatialhistogram.h \
+    colormoments.h
 
 FORMS    += mainwindow.ui \
     newindexdialog.ui

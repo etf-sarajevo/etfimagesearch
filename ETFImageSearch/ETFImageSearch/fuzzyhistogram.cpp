@@ -1,5 +1,7 @@
 #include "fuzzyhistogram.h"
 
+#include <QDebug>
+
 FuzzyHistogram::FuzzyHistogram() : ColorHistogram(), blackModel(Pixel::HSL), whiteModel(Pixel::HSL), grayModel(Pixel::HSL), hueModel(Pixel::HSL), numberOfBins(10)
 {
 	setColorModel(Pixel::RGB);

@@ -55,7 +55,7 @@ public:
 	 * @param height Number of rows in image.
 	 */
 	virtual FeatureVector extractFeatures(const uchar* imageData, int width, int height)=0;
-	
+
 	/**
 	 * Indexer uses this method to detect DCTFeatures class (see below).
 	 */

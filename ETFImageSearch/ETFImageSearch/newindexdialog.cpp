@@ -21,7 +21,7 @@ NewIndexDialog::~NewIndexDialog()
 
 void NewIndexDialog::on_featureTypeCombo_currentIndexChanged(const QString &arg1)
 {
-	if (arg1 == "Color Histogram" || arg1 == "Zhang et al." || arg1 == "HMMD quantization from CSD") {
+	if (arg1 == "Color Histogram" || arg1 == "Color Moments" || arg1 == "Zhang et al." || arg1 == "HMMD quantization from CSD") {
 		ui->blankFeatureOptions->setVisible(false);
 		ui->colorHistogramOptions_2->setVisible(true);
 	} else {
@@ -35,7 +35,7 @@ ImageFeatures* NewIndexDialog::getFeatures()
 	QString featureName = ui->featureTypeCombo->currentText();
 	ImageFeatures* alg = ImageFeatures::factory(featureName);
 	
-	if (featureName == "Color Histogram" || featureName == "Zhang et al." || featureName == "HMMD quantization from CSD") {
+	if (featureName == "Color Histogram" || featureName == "Color Moments" || featureName == "Zhang et al." || featureName == "HMMD quantization from CSD") {
 		QStringList paramsList;
 		paramsList.append( ui->colorModelCombo->currentText() );
 		paramsList.append( ui->cq1spin->text() + "," + ui->cq2spin->text() + "," + ui->cq3spin->text() );

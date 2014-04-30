@@ -35,7 +35,7 @@ public:
 								  BOTH_NORMALIZATION /** All values are scaled such that maximum is 1 and minimum is 0 */
 								};
 	
-private:
+protected:
 	
 	Pixel::ColorModel colorModel;
 	int componentCount;
@@ -59,7 +59,7 @@ public:
 	static QString static_name() { return QString("Color Histogram"); }
 	
 	// ImageFeatures methods
-	FeatureVector extractFeatures(const uchar* imageData, int width, int height);
+	virtual FeatureVector extractFeatures(const uchar* imageData, int width, int height);
 	double distance(FeatureVector f1, FeatureVector f2);
 	virtual int size();
 	DataType dataType();

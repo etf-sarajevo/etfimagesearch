@@ -62,6 +62,10 @@ QVector<Indexer::Result> SequentialIndexer::search(QString filePath, int nrResul
 	else
 		searchVector = getFV(filePath);
 	
+/*QString debug;
+for (int i(0); i<searchVector.size(); i++) debug += QString("%1,").arg(searchVector[i]);
+qDebug() << "HISTO: "<<debug;*/
+	
 	//ImageFeatures::vectorDump(searchVector);
 	
 	QVector<Indexer::Result> results;

@@ -204,9 +204,10 @@ void MainWindow::on_searchButton_clicked()
 		QString path = fsm->rootPath() + QDir::separator();
 		
 		QString result = QString("<h1>Top 10 results</h1><p>Search image:<br><img src=\"%1\" border=\"0\" width=\"120\" height=\"80\"></p><hr><table border=\"0\"><tr>").arg(fileName);
+		qDebug() << "QUERY: "<<fileName;
 		for (int i(0); i<results.size(); i++) {
-			//qDebug() << results[i].fileName << results[i].distance;
 			if (i<15) {
+				qDebug() << results[i].fileName << results[i].distance;
 				result += QString("<td><img src=\"%1\" width=\"120\" height=\"80\" border=\"0\"><br>%2 (%3)</td>\n").arg(path+results[i].fileName).arg(results[i].fileName).arg(results[i].distance);
 				if (i%3==2) result += "</tr><tr>";
 			}

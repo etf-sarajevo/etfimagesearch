@@ -2,7 +2,9 @@
 #include "mainwindow.h"
 
 #include <iostream>
+#include <stdexcept>
 #include <QDebug>
+#include <execinfo.h>
 
 #include "colorhistogram.h"
 #include "sequentialindexer.h"
@@ -20,9 +22,17 @@ int main(int argc, char *argv[])
 	
 	// No CLI arguments
 	if (argc == 1) {
-		MainWindow w;
-		w.show();
-		return a.exec();
+		try{
+			MainWindow w;
+			w.show();
+			return a.exec();
+		} catch(std::out_of_range e) {
+			std::cout<<"Out-of-range: "<<e.what()<<std::endl;
+			return -1;
+		} catch(const char e[]) {
+			std::cout<<"Exception: "<<e<<std::endl;
+			return -1;
+		}
 	}
 	
 	// Common stuff

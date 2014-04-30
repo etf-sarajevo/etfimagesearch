@@ -242,7 +242,9 @@ void Indexer::buildIndex()
 		
 		//qDebug() << "Indexing "<<fileInfo.fileName();
 		emit indexingFile(fileInfo.fileName());
-		putInIndex(fileInfo.fileName(), getFV(fileInfo.filePath()));
+		FeatureVector fv;
+		fv=getFV(fileInfo.filePath());
+		putInIndex(fileInfo.fileName(), fv);
 	}
 	
 	// Initialize whatever datastructures need to be initialized after putting in index

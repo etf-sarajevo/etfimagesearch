@@ -2,6 +2,8 @@
 #define FEATUREVECTOR_H
 
 #include <QVector>
+#include <cstdio>
+#include <stdexcept>
 
 /** 
  * Vector of features representing one image
@@ -23,11 +25,19 @@ public:
 	void push_back(double el) { fv[m_size++]=el; }
 	void resize(int size) { m_size=size; }
 	double& operator[](int i) {
-		if (i<0 || i>=m_size) throw "Exception";
+		if (i<0 || i>=m_size) {
+			char t[100];
+			snprintf(t, 99, "FeatureVector operator[]: %d", i);
+			throw std::out_of_range(std::string(t));
+		}
 		return fv[i];
 	}
 	double operator[](int i) const {
-		if (i<0 || i>=m_size) throw "Exception";
+		if (i<0 || i>=m_size) {
+			char t[100];
+			snprintf(t, 99, "FeatureVector operator[]: %d", i);
+			throw std::out_of_range(std::string(t));
+		}
 		return fv[i];
 	}
 	int size() const { return m_size; }
@@ -54,11 +64,11 @@ public:
 	void push_back(int el) { fv[m_size++]=el; }
 	void resize(int size) { m_size=size; }
 	int& operator[](int i) {
-		if (i<0 || i>=m_size) throw "Exception";
+		if (i<0 || i>=m_size) throw "FeatureVector operator[] out of range";
 		return fv[i];
 	}
 	int operator[](int i) const {
-		if (i<0 || i>=m_size) throw "Exception";
+		if (i<0 || i>=m_size) throw "FeatureVector operator[] out of range";
 		return fv[i];
 	}
 	int size() const { return m_size; }
