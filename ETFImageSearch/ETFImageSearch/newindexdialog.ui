@@ -55,6 +55,11 @@
          </item>
          <item>
           <property name="text">
+           <string>Spatial Histogram</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>Lu et al. v2</string>
           </property>
          </item>

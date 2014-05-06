@@ -181,88 +181,17 @@ void FuzzySpatialHistogram::incrementFSH(const Pixel& p, int width, int height, 
 			result [i] = 0;
 		}
 	}
-	/*else {
-	for (int i(0); i<FuzzyHistogram::size(); i++) {
-		for (int j(0); j<numHistograms(); j++) {
-			if (participation[j][x*y] > 0) {
-				result[i + j*FuzzyHistogram::size()] += result[i] * participation[j][x*y];
-			}
-		}
-		result [i] = 0;
-	}
-	}*/
-}
-
-void FuzzySpatialHistogram::precalculateFuzzyBoundsTable(int width, int height)
-{
-	participation.resize( numHistograms() );
-	
-	for (int i(0); i<numHistograms(); i++) {
-		participation[i].resize(width*height);
-		participation[i].fill(0, width*height);
-		
-		if (type == GRID) {
-			int rows = variableValues[6];
-			int cols = variableValues[7];
-			double gridk1 = variableValues[8];
-			double gridk2 = variableValues[9];
-			qDebug()<<"w"<<width<<"h"<<height;
-			
-			double fuzzyStartX = (double(width) / rows) * ( i % rows - gridk1);
-			double fixedStartX = (double(width) / rows) * ( i % rows + gridk2);
-			double fixedEndX = (double(width) / rows) * ( i % rows + 1 - gridk2);
-			double fuzzyEndX = (double(width) / rows) * ( i % rows + 1 + gridk1);
-			
-			double fuzzyStartY = (double(height) / cols) * ( i / rows - gridk1);
-			double fixedStartY = (double(height) / cols) * ( i / rows + gridk2);
-			double fixedEndY = (double(height)   / cols) * ( i / rows + 1 - gridk2);
-			double fuzzyEndY = (double(height)   / cols) * ( i / rows + 1 + gridk1);
-			
-			if (fuzzyStartX<0) fuzzyStartX=0;
-			if (fuzzyEndX>width) fuzzyEndX=width;
-			if (fuzzyStartY<0) fuzzyStartY=0;
-			if (fuzzyEndY>height) fuzzyEndY=height;
-			
-			qDebug()<<"fsx"<<fuzzyStartX<<"ffx"<<fixedStartX<<"fex"<<fixedEndX<<"ffex"<<fuzzyEndX;
-			qDebug()<<"fsy"<<fuzzyStartY<<"ffy"<<fixedStartY<<"fey"<<fixedEndY<<"ffey"<<fuzzyEndY;
-			
-			
-			for (int y(fuzzyStartY); y<fuzzyEndY; y++) {
-				QString s;
-				for (int x(fuzzyStartX); x<fuzzyEndX; x++) {
-					if (x>=fixedStartX && x<=fixedEndX) 
-						participation[i][y*width+x] = 1;
-					else if (x<fixedStartX)
-						participation[i][y*width+x] = double(x-fuzzyStartX) / (fixedStartX-fuzzyStartX);
-					else
-						participation[i][y*width+x] = double(x-fixedEndX) / (fuzzyEndX-fixedEndX);
-					
-					if (y>=fixedStartY && y<=fixedEndY)
-						participation[i][y*width+x] *= 1;
-					else if (y<fixedStartY)
-						participation[i][y*width+x] *= double(y-fuzzyStartY) / (fixedStartY-fuzzyStartY);
-					else
-						participation[i][y*width+x] *= double(y-fixedEndY) / (fuzzyEndY-fixedEndY);
-					if (participation[i][y*width+x]<0) participation[i][y*width+x]=0;
-					s+= QString("%1 ").arg(participation[i][y*width+x]);
-				}
-				//qDebug() << s;
-			}
-		} // if (type == GRID)
-		
-	}
 }
 
 
 FeatureVector FuzzySpatialHistogram::extractFeatures(const uchar* imageData, int width, int height)
 {
 	// We will resize the feature vector larger then needed
+	// First block is used to call incrementHistogram, then results are copied
+	// to the rest of feature vector in incrementFSH
 	int resultSize = FuzzyHistogram::size() * ( numHistograms() + 1);
 	result.resize( resultSize );
-	result.fill( 0 , resultSize );
-	participation.resize( numHistograms() );
-	
-	precalculateFuzzyBoundsTable(width, height);
+	result.fill( 0 , resultSize );;
 	
 	Pixel p; // Storage for one pixel
 	
@@ -282,25 +211,13 @@ FeatureVector FuzzySpatialHistogram::extractFeatures(const uchar* imageData, int
 		
 		incrementFSH(p, width, height, x, y);
 	}
-	
-	/*QString output;
-	for (int i = 0; i < result.size(); i++) {
-		output += QString("%1 ").arg(result[i]);
-	}
-	qDebug()<<"Image histogram:"<<output;*/
-	
+		
 	histogramNormalizeQuantize(width*height);
 	
-	/*output = "";
-	for (int i = 0; i < result.size(); i++) {
-		output += QString("%1 ").arg(result[i]);
-	}
-	qDebug()<<"After normalization:"<<output;*/
-	
-	for (int i(0); i<FuzzyHistogram::size() * ( numHistograms()); i++) {
+	// Remove first block since we dont need it anymore
+	for (int i(0); i<size(); i++)
 		result[i] = result[i+FuzzyHistogram::size()];
-	}
-	result.resize( FuzzyHistogram::size() * numHistograms() );
+	result.resize(size());
 	
 	return result;
 }

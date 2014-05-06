@@ -13,7 +13,7 @@ public:
 	virtual FeatureVector extractFeatures(const uchar* imageData, int width, int height);
 	
 	int size() { return FuzzyHistogram::size() * numHistograms(); }
-
+	
 	enum FSHType { GRID, ANNULAR, ANGULAR, ANNO_ANGULAR, BULLS_EYE };
 	
 	void setType(FSHType t) { type = t; }
@@ -21,6 +21,7 @@ public:
 	
 	void setFuzzy(bool f) { fuzzy = f; }
 	bool getFuzzy() const { return fuzzy; }
+	
 	
 private:
 	// Number of spatial histograms

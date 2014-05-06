@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     pixel.cpp \
     fuzzyhistogram.cpp \
     fuzzyspatialhistogram.cpp \
-    colormoments.cpp
+    colormoments.cpp \
+    spatialhistogram.cpp
 
 HEADERS  += mainwindow.h \
     indexer.h \
@@ -53,7 +54,8 @@ HEADERS  += mainwindow.h \
     pixel.h \
     fuzzyhistogram.h \
     fuzzyspatialhistogram.h \
-    colormoments.h
+    colormoments.h \
+    spatialhistogram.h
 
 FORMS    += mainwindow.ui \
     newindexdialog.ui

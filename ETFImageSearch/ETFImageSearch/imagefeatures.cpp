@@ -3,6 +3,7 @@
 #include "colormoments.h"
 #include "fuzzyhistogram.h"
 #include "fuzzyspatialhistogram.h"
+#include "spatialhistogram.h"
 #include "luetal_v2.h"
 #include "cedd.h"
 #include "hmmdquant.h"
@@ -28,6 +29,8 @@ ImageFeatures* ImageFeatures::factory(QString name)
 		return new FuzzyHistogram();
 	if (name == FuzzySpatialHistogram::static_name())
 		return new FuzzySpatialHistogram();
+	if (name == SpatialHistogram::static_name())
+		return new SpatialHistogram();
 	if (name == CEDD::static_name())
 		return new CEDD();
 	if (name == LuEtAl_v2::static_name())

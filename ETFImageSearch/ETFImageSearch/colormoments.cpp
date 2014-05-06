@@ -63,6 +63,9 @@ qDebug() << "HISTO: "<<debug;
 			result[i*3 + 1] = stddev(histogram, binstart, binend, result[i*3]);
 			result[i*3 + 2] = skewness(histogram, binstart, binend, result[i*3]);
 		}
+debug = QString("");
+for (int i(0); i<result.size(); i++) debug += QString("%1,").arg(result[i]);
+qDebug() << "MOMENTS: "<<debug;
 	} else {
 		result.resize( 3 );
 		result.fill( 0 , 3 );

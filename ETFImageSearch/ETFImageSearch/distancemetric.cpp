@@ -26,7 +26,7 @@ double DistanceMetric::distance(Type distanceMetric, const FeatureVector& f1, co
 {
 	switch(distanceMetric) {
 
-	case EUCLIDEAN:
+	case EUCLIDEAN: // L2
 	{
 		double sum(0);
 		uint size(f1.size());
@@ -60,7 +60,7 @@ double DistanceMetric::distance(Type distanceMetric, const FeatureVector& f1, co
 		return sum1 / sum2;
 	}
 	
-	case MANHATTAN:
+	case MANHATTAN: // L1
 	{
 		// Manhattan distance
 		/*int sum(0);
