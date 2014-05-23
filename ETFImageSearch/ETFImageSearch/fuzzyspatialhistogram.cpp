@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <cmath>
 
-FuzzySpatialHistogram::FuzzySpatialHistogram() : type(ANGULAR), fuzzy(false)
+FuzzySpatialHistogram::FuzzySpatialHistogram() : type(BULLS_EYE), fuzzy(true)
 {
 	setHistogramNormalization(ColorHistogram::MAX_NORMALIZATION); // Avoid precision loss
 	// GRID type
@@ -51,7 +51,7 @@ void FuzzySpatialHistogram::incrementFSH(const Pixel& p, int width, int height, 
 	if (type == ANNULAR) {
 		double x1 = (x - width/2)  / double(width/2);
 		double y1 = (y - height/2) / double(height/2);
-		double d=sqrt(x1*x1+y1*y1) / sqrt(2);
+		double d  = sqrt(x1*x1+y1*y1) / sqrt(2);
 		if (!fuzzy) {
 			int offset = d*variableValues[10];
 			if (offset >= variableValues[10]) 
@@ -171,18 +171,72 @@ void FuzzySpatialHistogram::incrementFSH(const Pixel& p, int width, int height, 
 		else angle = (angle + 1.5) / 2;
 		d = d / sqrt(2);
 		if (d==0) angle=0;
-		int offset;
-		if (d <= variableValues[12])
-			offset = 0;
-		else
-			offset = 1+angle*variableValues[11];
-		if (offset > variableValues[11]) offset = variableValues[11];
-//		if (y1>0)
-//		qDebug() << x1 << y1 << (d*sqrt(2)) << angle << offset << asin(y1/(d*sqrt(2)));
-		offset = (offset+1) * FuzzyHistogram::size();
-		for (int i(0); i<FuzzyHistogram::size(); i++) {
-			result [i+offset] += result[i];
-			result [i] = 0;
+		
+		if (!fuzzy) {
+			int offset;
+			if (d <= variableValues[12])
+				offset = 0;
+			else
+				offset = 1+angle*variableValues[11];
+			if (offset > variableValues[11]) offset = variableValues[11];
+//			if (y1>0)
+//			qDebug() << x1 << y1 << (d*sqrt(2)) << angle << offset << asin(y1/(d*sqrt(2)));
+			offset = (offset+1) * FuzzyHistogram::size();
+			for (int i(0); i<FuzzyHistogram::size(); i++) {
+				result [i+offset] += result[i];
+				result [i] = 0;
+			}
+		} else {
+			// Determine membership to central region
+			double centralRegion = variableValues[12];
+			double k1(variableValues[8]), k2(variableValues[9]);
+			double amount;
+			if (d<k2) {
+				amount = (d+k1) / (k2+k1);
+			}
+			else if (d<=centralRegion-k1) {
+				amount = 1;
+			} else if (d<=centralRegion+k1) {
+				amount = 1 - (d-centralRegion+k1) / (2*k1);
+			} else
+				amount = 0;
+			
+			int offset = FuzzyHistogram::size();
+			if (amount > 0) {
+				for (int i(0); i<FuzzyHistogram::size(); i++) {
+					result [i+offset] += result[i]*amount;
+					result [i] = 0;
+				}
+			}
+			
+			// Determine membership to angular regions
+			amount = 1-amount;
+			
+			double segLength = 1.0 / variableValues[11];
+			double lowFuzzy(-k1), lowFixed(k2), highFixed(segLength-k1), highFuzzy(segLength+k2);
+			for (int hist(0); hist<variableValues[11]; hist++) {
+				double angleAmount;
+				if (angle<lowFuzzy) break;
+				if (angle<lowFixed) {
+					angleAmount = amount * (angle-lowFuzzy) / (lowFixed-lowFuzzy);
+				}
+				else if (angle<=highFixed) {
+					angleAmount = amount;
+				} else if (angle<=highFuzzy) {
+					angleAmount = (1 - (angle-highFixed) / (highFuzzy - highFixed)) * amount;
+				}
+				if (angle <= highFuzzy) {
+					int offset = (hist+2) * FuzzyHistogram::size();
+					for (int i(0); i<FuzzyHistogram::size(); i++) {
+						result [i+offset] += result[i]*amount;
+						result [i] = 0;
+					}
+				}
+				lowFuzzy  += segLength;
+				lowFixed  += segLength;
+				highFixed += segLength;
+				highFuzzy += segLength;
+			}
 		}
 	}
 }
