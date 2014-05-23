@@ -243,9 +243,10 @@ void ColorHistogram::histogramNormalizeQuantize(int imageSize)
 		// Normalize and quantize
 		for (int i(0); i<result.size(); i++) {
 			qreal x = qreal(result[i]) / max;
-			if (histogramQuantization < 32)
+			if (histogramQuantization < 32) {
 				result[i] = uint ( x * factor );
-			else
+				if (result[i] == factor) result[i]--; // Prevent overflow
+			} else
 				result[i] = x;
 		}
 	}
@@ -264,9 +265,10 @@ void ColorHistogram::histogramNormalizeQuantize(int imageSize)
 		// Normalize and quantize
 		for (int i(0); i<result.size(); i++) {
 			qreal x = qreal(result[i] - min) / (max - min);
-			if (histogramQuantization < 32)
+			if (histogramQuantization < 32) {
 				result[i] = uint ( x * factor );
-			else
+				if (result[i] == factor) result[i]--; // Prevent overflow
+			} else
 				result[i] = x;
 		}
 	}

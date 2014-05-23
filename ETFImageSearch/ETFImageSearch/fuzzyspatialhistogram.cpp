@@ -145,17 +145,21 @@ void FuzzySpatialHistogram::incrementFSH(const Pixel& p, int width, int height, 
 		else angle = (angle + 1.5) / 2;
 		d = d / sqrt(2);
 		if (d==0) angle=0;
-		int offset1 = d*variableValues[10];
-		if (offset1 >= variableValues[10]) 
-			offset1 = variableValues[10] - 1;
-		int offset2 = angle*variableValues[11];
-		if (offset2 >= variableValues[11]) 
-			offset2 = variableValues[11] - 1;
-		//qDebug() << d << angle << offset1 << offset2 << (offset2*variableValues[10] + offset1 + 1);
-		int offset = (offset2*variableValues[10] + offset1 + 1) * FuzzyHistogram::size();
-		for (int i(0); i<FuzzyHistogram::size(); i++) {
-			result [i+offset] += result[i];
-			result [i] = 0;
+		if (!fuzzy) {
+			int offset1 = d*variableValues[10];
+			if (offset1 >= variableValues[10]) 
+				offset1 = variableValues[10] - 1;
+			int offset2 = angle*variableValues[11];
+			if (offset2 >= variableValues[11]) 
+				offset2 = variableValues[11] - 1;
+			//qDebug() << d << angle << offset1 << offset2 << (offset2*variableValues[10] + offset1 + 1);
+			int offset = (offset2*variableValues[10] + offset1 + 1) * FuzzyHistogram::size();
+			for (int i(0); i<FuzzyHistogram::size(); i++) {
+				result [i+offset] += result[i];
+				result [i] = 0;
+			}
+		} else {
+			
 		}
 	}
 	else if (type == BULLS_EYE) {

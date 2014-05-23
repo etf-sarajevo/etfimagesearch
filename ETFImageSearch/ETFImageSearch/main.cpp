@@ -36,8 +36,8 @@ int main(int argc, char *argv[])
 	}
 	
 	// Common stuff
-	QString imagePath(QDir::currentPath()), featureName, indexer("Sequential indexer"), trainingSet("training_set.txt");
-	QStringList optimizeVars, params;
+	QString imagePath(QDir::currentPath()), featureName, indexer("Sequential indexer"), trainingSet("training_set.txt"), params;
+	QStringList optimizeVars;
 	int useIndex(-1);
 	int verbosityLevel(0);
 	QStringList qargv = a.arguments(); // Shortcut for argv as QStringList
@@ -117,11 +117,11 @@ int main(int argc, char *argv[])
 		
 		else if (qargv[i] == "-params") {
 			if (i+1 == argc) {
-				std::cerr << "Error: -params requires an argument: comma separated list of params to optimize\n\n";
+				std::cerr << "Error: -params requires an argument: semicolon separated list of params to optimize\n\n";
 				usage();
 				return -1;
 			}
-			params = qargv[i+1].split(',');
+			params = qargv[i+1];
 			i++;
 		}
 		
@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
 		if (!params.isEmpty()) {
 			// Check for invalid params
 			try {
-				feature->setParams(params.join(QString(';')));
+				feature->setParams(params);
 			} catch (QString s) {
 				qDebug() << s;
 				return -1;
@@ -179,13 +179,16 @@ int main(int argc, char *argv[])
 	if (optimizeVars.isEmpty()) {
 		if (verbosityLevel>0) std::cerr << "Starting PRtest...\n";
 		prtest.execute();
-		std::cout << "MAP ="<<prtest.MAP << "AP16 ="<<prtest.AP16<<"AWP16 ="<<prtest.AWP16<<"ANMRR ="<<prtest.ANMRR<<std::endl;
+		std::cout << "MAP = "<<prtest.MAP << " AP16 = "<<prtest.AP16<<" AWP16 = "<<prtest.AWP16<<" ANMRR = "<<prtest.ANMRR<<std::endl;
+		return 0;
 	}
 	
 	// Do optimize run
 	else {
 		// TODO: use signals-slots to read values from PRtest class and output while using verbosity level etc.
 		prtest.optimize(optimizeVars, trainingSet);
+		std::cout << "Finished" << std::endl;
+		return 0;
 	}
 	
 	/*if (a.arguments().size()>1 && a.arguments()[1] == "-ht") {

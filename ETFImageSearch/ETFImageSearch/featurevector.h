@@ -23,7 +23,12 @@ public:
 	}
 	void append(double el) { fv[m_size++]=el; }
 	void push_back(double el) { fv[m_size++]=el; }
-	void resize(int size) { m_size=size; }
+	void resize(int size) { 
+		if (m_size < size)
+			for (int i(m_size); i<size; i++) 
+				fv[i]=0;
+		m_size=size; 
+	}
 	double& operator[](int i) {
 		if (i<0 || i>=m_size) {
 			char t[100];
