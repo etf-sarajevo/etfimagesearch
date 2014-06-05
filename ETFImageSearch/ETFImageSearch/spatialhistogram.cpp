@@ -190,6 +190,26 @@ void SpatialHistogram::spatialIncrement(const Pixel& p, double relX, double relY
 }
 
 
+void SpatialHistogram::spatialNormalizeQuantize()
+{
+	int factor = pow(2, histogramQuantization);
+	
+	// Just quantize, no normalization
+	for (int i = 0; i < numHistograms(); i++) {
+		double sum = 0;
+		for (int j = 0; j < ColorHistogram::size(); j++)
+			sum += result[i * ColorHistogram::size() + j];
+
+		for (int j = 0; j < ColorHistogram::size(); j++) {
+			int idx = i * ColorHistogram::size() + j;
+			if (histogramQuantization < 32)
+				result[idx] = uint ( (result[idx] / sum ) * factor );
+			else
+				result[idx] = result[idx] / sum;
+		}
+	}
+}
+
 
 FeatureVector SpatialHistogram::extractFeatures(const uchar *imageData, int width, int height)
 {
@@ -238,7 +258,7 @@ FeatureVector SpatialHistogram::extractFeatures(const uchar *imageData, int widt
 		
 	}
 	else // if (moments)
-		histogramNormalizeQuantize(width*height);
+		spatialNormalizeQuantize();
 	
 	
 	return result;

@@ -45,6 +45,8 @@ private:
 	void findMaxDistance(const uchar* imageData, int width, int height);
 	void spatialIncrement(const Pixel& p, double relX, double relY);
 	
+	void spatialNormalizeQuantize();
+	
 	SpatialType spatialType;
 	AppType appType;
 	bool moments;
