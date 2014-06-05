@@ -145,7 +145,8 @@ void SpatialHistogram::spatialIncrement(const Pixel& p, double relX, double relY
 	
 	// Angle from coordinate start scaled to range [0,1]
 	double angle;
-	if (spatialType == ANGULAR || spatialType == ANNO_ANGULAR) {
+	if (spatialType == ANGULAR || spatialType == ANNO_ANGULAR || spatialType == BULLS_EYE) {
+		// Don't compute angle if not used
 		double pi = 4*atan(1);
 		angle = asin(relX/d) / pi; // Range is now [-0.5,0.5]
 		
@@ -162,11 +163,13 @@ void SpatialHistogram::spatialIncrement(const Pixel& p, double relX, double relY
 		if (offset >= variableValues[2]) 
 			offset = variableValues[2] - 1;
 	}
+	
 	else if (spatialType == ANGULAR) {
 		offset = angle*variableValues[3];
 		if (offset >= variableValues[3]) 
 			offset = variableValues[3] - 1;
 	}
+	
 	else if (spatialType == ANNO_ANGULAR) {
 		int offset1 = d*variableValues[2];
 		if (offset1 >= variableValues[2]) 
@@ -177,12 +180,24 @@ void SpatialHistogram::spatialIncrement(const Pixel& p, double relX, double relY
 
 		offset = offset2*variableValues[2] + offset1;
 	}
+	
 	else if (spatialType == BULLS_EYE) {
-		if (d <= variableValues[12])
+		if (d <= variableValues[4])
 			offset = 0;
 		else
-			offset = 1+angle*variableValues[11];
-		if (offset > variableValues[11]) offset = variableValues[11];
+			offset = 1+angle*variableValues[3];
+		if (offset > variableValues[3]) offset = variableValues[3];
+	}
+
+	else if (spatialType == GRID) {
+		int prow = ((relX + 1) / 2) * variableValues[0];
+		int pcol = ((relY + 1) / 2)  * variableValues[1];
+
+		// if relX||relY == 1
+		if (prow >= variableValues[0]) prow = variableValues[0] - 1;
+		if (pcol >= variableValues[1]) pcol = variableValues[1] - 1;
+
+		offset = pcol*variableValues[1] + prow;
 	}
 	
 	offset *= ColorHistogram::size();
