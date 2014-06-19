@@ -61,3 +61,10 @@ void ImageFeatures::vectorDump(std::vector<int> vector) {
 		output += QString("%1,").arg(vector[i]);
 	qDebug() << output;
 }
+
+void ImageFeatures::vectorDump(FeatureVector vector) {
+	QString output;
+	for (uint i(0); i<vector.size(); i++)
+		output += QString("%1,").arg(vector[i]);
+	qDebug() << output;
+}

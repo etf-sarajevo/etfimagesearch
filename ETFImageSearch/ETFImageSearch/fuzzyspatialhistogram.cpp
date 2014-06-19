@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <cmath>
 
-FuzzySpatialHistogram::FuzzySpatialHistogram() : type(BULLS_EYE), fuzzy(true)
+FuzzySpatialHistogram::FuzzySpatialHistogram() : type(ANNULAR), fuzzy(true)
 {
 	setHistogramNormalization(ColorHistogram::MAX_NORMALIZATION); // Avoid precision loss
 	// GRID type
@@ -80,7 +80,7 @@ void FuzzySpatialHistogram::incrementFSH(const Pixel& p, int width, int height, 
 					int offset = (hist+1) * FuzzyHistogram::size();
 					for (int i(0); i<FuzzyHistogram::size(); i++) {
 						result [i+offset] += result[i]*amount;
-						result [i] = 0;
+//						result [i] = 0;
 					}
 				}
 				lowFuzzy  += segLength;
@@ -88,6 +88,8 @@ void FuzzySpatialHistogram::incrementFSH(const Pixel& p, int width, int height, 
 				highFixed += segLength;
 				highFuzzy += segLength;
 			}
+			for (int i(0); i<FuzzyHistogram::size(); i++) 
+				result[i] = 0;
 		}
 	}
 	else if (type == ANGULAR) {

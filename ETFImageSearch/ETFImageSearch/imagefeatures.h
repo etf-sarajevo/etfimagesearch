@@ -79,6 +79,7 @@ public:
 	static void vectorDump(QVector<double> vector);
 	static void vectorDump(std::vector<double> vector);
 	static void vectorDump(std::vector<int> vector);
+	static void vectorDump(FeatureVector vector);
 	
 	
 	
