@@ -10,7 +10,7 @@ public:
 	/**
 	 * Supported color models
 	 */
-	enum ColorModel { RGB, YUV, HSV, HSL, YIQ, XYZ, LAB, LUV, HMMD, HY, IHLS, L1L2L3, HSI };
+	enum ColorModel { RGB, YUV, HSV, HSL, YIQ, XYZ, LAB, LUV, LCH, HMMD, HY, IHLS, L1L2L3, HSI };
 
 	Pixel(ColorModel model=Pixel::RGB);
 	

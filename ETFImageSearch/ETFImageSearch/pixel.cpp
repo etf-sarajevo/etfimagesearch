@@ -3,8 +3,8 @@
 #include <QColor>
 #include <cmath>
 
-#define NR_MODELS 12
-static const char names[][NR_MODELS] = { "RGB", "YUV", "HSV", "HSL", "YIQ", "XYZ", "LAB", "LUV", "HMMD", "HY", "IHLS", "L1L2L3"};
+#define NR_MODELS 14
+static const char names[][NR_MODELS] = { "RGB", "YUV", "HSV", "HSL", "YIQ", "XYZ", "LAB", "LUV", "LCH", "HMMD", "HY", "IHLS", "L1L2L3", "HSI"};
 
 
 Pixel::Pixel(ColorModel model) : model(model)
@@ -52,7 +52,7 @@ void Pixel::convertColorModel(ColorModel model)
 	if (model == RGB) return; // Nothing to do
 	
 	int R = c[0], G = c[1], B = c[2];
-	double X,Y,Z; // used in several conversions
+	double X,Y,Z,L_lab,a_lab,b_lab; // used in several conversions
 	
 	if (model == YUV) {
 		// YUV formula
@@ -187,7 +187,7 @@ void Pixel::convertColorModel(ColorModel model)
 		return;
 	}
 	
-	if (model == XYZ || model == LAB || model == LUV) {
+	if (model == XYZ || model == LAB || model == LUV || model == LCH) {
 		// Convert RGB to range [0,1]
 		double r(double(R)/255);
 		double g(double(G)/255);
@@ -213,7 +213,7 @@ void Pixel::convertColorModel(ColorModel model)
 		return;
 	}
 	
-	if (model == LAB) {
+	if (model == LAB || model == LCH) {
 		// Reference illuminant D65 white point
 		double Xn = 0.95047;
 		double Yn = 1;
@@ -226,14 +226,35 @@ void Pixel::convertColorModel(ColorModel model)
 		if ( Yfn > D ) Yfn = pow(Yfn,1.0/3.0); else Yfn = ( 1.0 / 3.0 ) * pow( (29.0 / 6.0), 2) * Yfn + ( 4.0 / 29.0 );
 		if ( Zfn > D ) Zfn = pow(Zfn,1.0/3.0); else Zfn = ( 1.0 / 3.0 ) * pow( (29.0 / 6.0), 2) * Zfn + ( 4.0 / 29.0 );
 		
-		double L = 116 * Yfn - 16;
-		double a = 500 * (Xfn - Yfn);
-		double b = 200 * (Yfn - Zfn);
-		
+		L_lab = 116 * Yfn - 16;
+		a_lab = 500 * (Xfn - Yfn);
+		b_lab = 200 * (Yfn - Zfn);
+	}
+	
+	if (model == LAB) {
 		// Convert to byte
-		c[0] = toByte( L*255 / 100 );
-		c[1] = toByte( a + 127 );
-		c[2] = toByte( b + 127 );
+		c[0] = toByte( L_lab * 255 / 100 );
+		
+		// Actual gamut of RGB in CIE Lab space is [0,100], [-86,98], [-107,94];
+		c[1] = toByte( (a_lab + 86)  * 255 /  (86 + 98) );
+		c[2] = toByte( (b_lab + 107) * 255 / (107 + 94) );
+		
+		return;
+	}
+	
+	if (model == LCH) {
+		// a and b are in range [-127,128]
+		a_lab = (a_lab+127) / 255;
+		b_lab = (b_lab+127) / 255;
+		
+		double H = atan2(b_lab, a_lab);
+		double C = sqrt(a_lab*a_lab + b_lab*b_lab);
+
+		c[0] = toByte( L_lab * 255 / 100 );
+		// H is in range [0.092, 1.37]
+		c[1] = toByte( (H - 0.092) * 199 );
+		// C is in range [0.533, 1.11]
+		c[2] = toByte( (C - 0.533) * 440 );
 		
 		return;
 	}
