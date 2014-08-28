@@ -7,15 +7,17 @@
 SpatialHistogram::SpatialHistogram() : spatialType(ANNULAR), appType(BIN_DISTRIBUTION),
 	moments(false)
 {
+	setHistogramNormalization(NO_NORMALIZATION);
+	
 	// GRID type
 	addVariable(Variable("rows", 3, 1, 10, 1)); // variableValues[0]
 	addVariable(Variable("cols", 3, 1, 10, 1)); // variableValues[1]
 	// ANNULAR type
-	addVariable(Variable("circles", 16, 1, 10, 1)); // variableValues[2]
+	addVariable(Variable("circles", 3, 1, 10, 1)); // variableValues[2]
 	// ANGULAR type
-	addVariable(Variable("angles", 3, 1, 10, 1)); // variableValues[3]
+	addVariable(Variable("angles", 2, 1, 10, 1)); // variableValues[3]
 	// BULLS_EYE type
-	addVariable(Variable("centralRegion", 0.2, 0, 1, 0.1)); // variableValues[4]
+	addVariable(Variable("centralRegion", 0.31, 0, 1, 0.1)); // variableValues[4]
 }
 
 
@@ -73,6 +75,11 @@ void SpatialHistogram::findCentroids(const uchar* imageData, int width, int heig
 	
 	Pixel p;
 	
+	for (int i(0); i<ColorHistogram::size(); i++) {
+		centroid[i] = QPointF(0,0);
+		binPixelCount[i] = 0;
+	}
+	
 	for (int i(0); i<width*height*4; i+=4) {
 		p.model = Pixel::RGB;
 		p.c[0] = imageData[i+2]; // RED
@@ -95,7 +102,7 @@ void SpatialHistogram::findCentroids(const uchar* imageData, int width, int heig
 	}
 	
 	for (int i(0); i<ColorHistogram::size(); i++)
-		if (binPixelCount[i] > 0) {
+		if (binPixelCount[i] > 1) {
 			centroid[i].setX( centroid[i].x() / binPixelCount[i] );
 			centroid[i].setY( centroid[i].y() / binPixelCount[i] );
 		}
@@ -108,6 +115,8 @@ void SpatialHistogram::findCentroids(const uchar* imageData, int width, int heig
 void SpatialHistogram::findMaxDistance(const uchar* imageData, int width, int height)
 {
 	maxDistance.resize(ColorHistogram::size());
+	for (int i(0); i<ColorHistogram::size(); i++)
+		maxDistance[i] = 0;
 	
 	Pixel p;
 	
@@ -190,14 +199,11 @@ void SpatialHistogram::spatialIncrement(const Pixel& p, double relX, double relY
 	}
 
 	else if (spatialType == GRID) {
-		int prow = ((relX + 1) / 2) * variableValues[0];
-		int pcol = ((relY + 1) / 2)  * variableValues[1];
-
-		// if relX||relY == 1
-		if (prow >= variableValues[0]) prow = variableValues[0] - 1;
-		if (pcol >= variableValues[1]) pcol = variableValues[1] - 1;
-
+		int prow = relX  * variableValues[0];
+		int pcol = relY  * variableValues[1];
 		offset = pcol*variableValues[1] + prow;
+		int maxoffset = variableValues[0]*variableValues[1] - 1;
+		if (offset > maxoffset) offset = maxoffset; // Due to relX||relY==1
 	}
 	
 	offset *= ColorHistogram::size();
