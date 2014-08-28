@@ -19,16 +19,29 @@ FuzzyHistogram::FuzzyHistogram() : ColorHistogram(), blackModel(Pixel::HSL), whi
 	addVariable(Variable("whiteUpper", 0.96, 0.5, 1, 0.01)); // variableValues[3] = 0.96;
 	addVariable(Variable("grayLower",  0.10, 0, 0.5, 0.01)); // variableValues[4] = 0.10;
 	addVariable(Variable("grayUpper",  0.21, 0, 0.5, 0.01)); // variableValues[5] = 0.21;
+	
+	fuzzyHueBoundsCount = 15;
+	double fhb[15] = {0, 10, 30, 60, 80, 130, 150, 200, 220, 230, 250, 280, 300, 360, 360};
+	for (int i(0); i<15; i++) fuzzyHueBounds[i] = fhb[i];
 }
 
 void FuzzyHistogram::setParams(QString params)
 {
 	QStringList paramsList = params.split(';');
+	if (paramsList.size() < 10) 
+		throw "Too few parameters";
+	
+	numberOfBins = paramsList[9].toInt();
+	fuzzyHueBoundsCount = (numberOfBins-3)*2 + 1;
+	
+	if (paramsList.size() != 9+fuzzyHueBoundsCount)
+		throw QString("Only %1 parameters, expected %2").arg(paramsList.size()).arg(9+fuzzyHueBoundsCount);
+	
 	blackModel == Pixel::fromString(paramsList[0]);
 	whiteModel == Pixel::fromString(paramsList[1]);
 	grayModel  == Pixel::fromString(paramsList[2]);
 	bool ok;
-	numberOfBins == paramsList[2].toInt(&ok);
+	//numberOfBins == paramsList[2].toInt(&ok);
 	
 	// Optimize hue model to avoid unneccessary conversions
 	if (blackModel == Pixel::HSV || blackModel == Pixel::HSL || blackModel == Pixel::IHLS || blackModel == Pixel::HMMD)
@@ -39,6 +52,13 @@ void FuzzyHistogram::setParams(QString params)
 		hueModel = grayModel;
 	else
 		hueModel = Pixel::HSV;
+	
+	for (int i(0); i<6; i++)
+		variableValues[i] = paramsList[3+i].toFloat();
+	
+	for (int i(0); i<fuzzyHueBoundsCount-1; i++)
+		fuzzyHueBounds[i] = paramsList[10+i].toFloat();
+	fuzzyHueBounds[fuzzyHueBoundsCount-1] = fuzzyHueBounds[0]+360;
 }
 
 QString FuzzyHistogram::getParams()
@@ -47,7 +67,14 @@ QString FuzzyHistogram::getParams()
 	paramsList.append(Pixel::toString(blackModel));
 	paramsList.append(Pixel::toString(whiteModel));
 	paramsList.append(Pixel::toString(grayModel));
+	
+	for (int i(0); i<6; i++)
+		paramsList.append(QString("%1").arg(variableValues[i]));
+	
 	paramsList.append(QString("%1").arg(numberOfBins));
+	
+	for (int i(0); i<fuzzyHueBoundsCount-1; i++)
+		paramsList.append(QString("%1").arg(fuzzyHueBounds[i]));
 	return paramsList.join(QString(';'));
 }
 
@@ -106,9 +133,6 @@ void FuzzyHistogram::incrementHistogram(const Pixel &p)
 	double  grayLower=variableValues[4],  grayUpper=variableValues[5];
 	double whiteLower=variableValues[2], whiteUpper=variableValues[3];
 	
-	double fuzzyHueBounds[14] = {0, 10, 30, 60, 80, 130, 150, 200, 220, 230, 250, 280, 300, 360};
-	int fuzzyHueBoundsCount(14);
-	
 	double hue, black, white, gray;
 	convertModels(hue,black,white,gray,p);
 		
@@ -145,14 +169,15 @@ void FuzzyHistogram::incrementHistogram(const Pixel &p)
 
 	hue*=360;
 	for (int i(0); i<fuzzyHueBoundsCount-1; i++) {
-		if (hue>=fuzzyHueBounds[i] && hue<=fuzzyHueBounds[i+1]) {
+		if ((hue>=fuzzyHueBounds[i] && hue<=fuzzyHueBounds[i+1]) ||
+				(fuzzyHueBounds[i]<0 && hue>=fuzzyHueBounds[i]+360 && hue<=fuzzyHueBounds[i+1]+360)) {
 			if (i%2 == 0) {
 				int color = 3 + i/2;
 				result[color] += colorPart;
 			} else {
 				int leftColor = 3 + i/2;
 				int rightColor = leftColor+1;
-				if (rightColor == 10) rightColor=3;
+				if (rightColor == numberOfBins) rightColor=3;
 				double rightAmount = (hue-fuzzyHueBounds[i])/(fuzzyHueBounds[i+1]-fuzzyHueBounds[i]);
 				result[rightColor] += rightAmount*colorPart;
 				result[leftColor] += (1-rightAmount)*colorPart;

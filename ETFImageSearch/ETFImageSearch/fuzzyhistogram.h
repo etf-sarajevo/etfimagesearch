@@ -32,6 +32,8 @@ public:
 private:
 	Pixel::ColorModel blackModel, whiteModel, grayModel, hueModel;
 	int numberOfBins;
+	int fuzzyHueBoundsCount;
+	double fuzzyHueBounds[1000];
 	void convertModels(double& hue, double& black, double& white, double& gray, const Pixel& p);
 };
 
