@@ -46,7 +46,7 @@ public:
 		return fv[i];
 	}
 	int size() const { return m_size; }
-	void fill(int size, double value) {
+	void fill(double value, int size) {
 		if (m_size<size) m_size=size;
 		for (int i(0); i<size; i++) fv[i]=value;
 	}
