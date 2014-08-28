@@ -7,7 +7,7 @@
 QT       += core gui
 
 # Uncomment this to enable ANN indexer
-CONFIG += ann
+#CONFIG += ann
 
 TARGET = ETFImageSearch
 TEMPLATE = app
