@@ -10,9 +10,24 @@
 #include "sequentialindexer.h"
 #include "prtest.h"
 
+#include <sys/time.h>
+
+double getTime() 
+{
+	static timeval t;
+	timeval newtime;
+	double elapsedTime;
+	
+	gettimeofday(&newtime, NULL);
+	elapsedTime = (newtime.tv_sec - t.tv_sec) * 1000.0;      // sec to ms
+	elapsedTime += (newtime.tv_usec - t.tv_usec) / 1000.0;   // us to ms
+	t = newtime;
+	return elapsedTime;
+}
+
 void usage() {
 	std::cerr << "ETFImageSearch v2014-03-13\nby: Vedran Ljubovic (c) ETF 2012-2014\nLicensed under GNU GPL v3\n\n";
-	std::cerr << "Usage:\n  -help\n  -path\n  -feature\n  -indexer\n  -optimize\n  -trainingset\n  -reuseindex\n  -params\n  -verbose\n";
+	std::cerr << "Usage:\n  -help\n  -path\n  -feature\n  -indexer\n  -optimize\n  -trainingset\n  -reuseindex\n  -params\n  -query\n  -verbose\n";
 	return;
 }
 
@@ -36,7 +51,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// Common stuff
-	QString imagePath(QDir::currentPath()), featureName, indexer("Sequential indexer"), trainingSet("training_set.txt"), params;
+	QString imagePath(QDir::currentPath()), featureName, indexer("Sequential indexer"), trainingSet("training_set.txt"), params, queryImage;
 	QStringList optimizeVars;
 	int useIndex(-1);
 	int verbosityLevel(0);
@@ -117,7 +132,7 @@ int main(int argc, char *argv[])
 		
 		else if (qargv[i] == "-params") {
 			if (i+1 == argc) {
-				std::cerr << "Error: -params requires an argument: semicolon separated list of params to optimize\n\n";
+				std::cerr << "Error: -params requires an argument: semicolon separated list of params\n\n";
 				usage();
 				return -1;
 			}
@@ -125,8 +140,18 @@ int main(int argc, char *argv[])
 			i++;
 		}
 		
+		else if (qargv[i] == "-query") {
+			if (i+1 == argc) {
+				std::cerr << "Error: -query requires an argument: path to query image\n\n";
+				usage();
+				return -1;
+			}
+			queryImage = qargv[i+1];
+			i++;
+		}
+		
 		else if (qargv[i] == "-verbose") {
-			verbosityLevel=1; // TODO: add more levels
+			verbosityLevel++; // TODO: add more levels
 		}
 
 		else {
@@ -146,6 +171,8 @@ int main(int argc, char *argv[])
 	// Start work
 	Indexer* idx;
 	ImageFeatures* feature;
+	
+	try {
 	if (useIndex == -1) {
 		feature = ImageFeatures::factory(featureName);
 		if (!params.isEmpty()) {
@@ -163,10 +190,22 @@ int main(int argc, char *argv[])
 
 		idx = Indexer::factory(indexer, feature, imagePath);
 		if (verbosityLevel>0) std::cerr << "Building first index...\n";
+		
+		double t1 = getTime();
 		idx->buildIndex();
+		double t2 = getTime();
+		if (verbosityLevel>0) std::cerr << "Indexing time: " << t2 << " ms\n";
 	} else {
 		idx = Indexer::createIndex(imagePath, useIndex);
 		feature = idx->getAlgorithm();
+	}
+	
+	// Query a single image
+	if (!queryImage.isEmpty()) {
+		QVector<Indexer::Result> results = idx->search(queryImage);
+		for (int i(0); i<results.size(); i++)
+			std::cout << results[i].fileName.toAscii().data() << "   " << results[i].distance << std::endl;
+		return 0;
 	}
 	
 	PRTest prtest(imagePath, feature, idx);
@@ -178,18 +217,26 @@ int main(int argc, char *argv[])
 	// If not optimize, do a simple PR test
 	if (optimizeVars.isEmpty()) {
 		if (verbosityLevel>0) std::cerr << "Starting PRtest...\n";
+		double t1 = getTime();
 		prtest.execute();
+		double t2 = getTime();
 		std::cout << "MAP = "<<prtest.MAP << " AP16 = "<<prtest.AP16<<" AWP16 = "<<prtest.AWP16<<" ANMRR = "<<prtest.ANMRR<<std::endl;
-		return 0;
+		if (verbosityLevel>0) std::cerr << "PRtest time: " << t2 << " ms\n";
 	}
 	
 	// Do optimize run
 	else {
 		// TODO: use signals-slots to read values from PRtest class and output while using verbosity level etc.
 		prtest.optimize(optimizeVars, trainingSet);
-		std::cout << "Finished" << std::endl;
-		return 0;
 	}
+	
+	} catch(const char e[]) {
+		qDebug() << "EXCEPTION: "<<e;
+	} catch(QString e) {
+		qDebug() << "EXCEPTION: "<<e;
+	}
+	
+	return 0;
 	
 	/*if (a.arguments().size()>1 && a.arguments()[1] == "-ht") {
 		QFile input(a.arguments()[2]);
