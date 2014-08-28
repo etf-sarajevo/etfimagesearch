@@ -319,5 +319,5 @@ double LuEtAl_v2::distance(FeatureVector f1, FeatureVector f2)
 	qreal W = kD*D + kME*ME;
 	//std::cout << "W = "<<W<<std::endl;
 	
-	return ME;
+	return W;
 }

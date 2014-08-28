@@ -76,9 +76,10 @@ public:
 	
 	
 	// Some debugging functions
-	static void vectorDump(QVector<double> vector);
-	static void vectorDump(std::vector<double> vector);
-	static void vectorDump(std::vector<int> vector);
+	template<typename T>
+	static void vectorDump(QVector<T> vector);
+	template<typename T>
+	static void vectorDump(std::vector<T> vector);
 	static void vectorDump(FeatureVector vector);
 	
 	

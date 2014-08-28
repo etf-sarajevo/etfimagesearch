@@ -39,23 +39,19 @@ ImageFeatures* ImageFeatures::factory(QString name)
 		return new HMMDquant();
 	if (name == ZhangEtAl::static_name())
 		return new ZhangEtAl();
+	throw QString("Unknown feature '%1'").arg(name);
 }
 
-void ImageFeatures::vectorDump(QVector<double> vector) {
+template<typename T>
+void ImageFeatures::vectorDump(QVector<T> vector) {
 	QString output;
 	for (uint i(0); i<vector.size(); i++)
 		output += QString("%1,").arg(vector[i]);
 	qDebug() << output;
 }
 
-void ImageFeatures::vectorDump(std::vector<double> vector) {
-	QString output;
-	for (uint i(0); i<vector.size(); i++)
-		output += QString("%1,").arg(vector[i]);
-	qDebug() << output;
-}
-
-void ImageFeatures::vectorDump(std::vector<int> vector) {
+template<typename T>
+void ImageFeatures::vectorDump(std::vector<T> vector) {
 	QString output;
 	for (uint i(0); i<vector.size(); i++)
 		output += QString("%1,").arg(vector[i]);
