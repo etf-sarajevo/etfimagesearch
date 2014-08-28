@@ -205,6 +205,11 @@
             </item>
             <item>
              <property name="text">
+              <string>LCH</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
               <string>HY</string>
              </property>
             </item>
@@ -216,6 +221,11 @@
             <item>
              <property name="text">
               <string>HMMD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>HSI</string>
              </property>
             </item>
            </widget>
